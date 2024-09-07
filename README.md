@@ -1,4 +1,4 @@
-# CourseHub
+#### CourseHub
 
 ## Getting Started
 
@@ -6,7 +6,8 @@
 
 - Python 3.8 or higher
 - pip (Python package manager)
-- Node.js and npm (Node package manager)
+- Node.js (v14.0.0 or higher)
+- npm (v6.0.0 or higher)
 
 ### Setting Up the Development Environment
 
@@ -55,4 +56,19 @@
 
    ```bash
    python manage.py runserver
+   ```
+
+#### React Frontend
+
+1. **Install Dependencies:**
+
+   ```bash
+   cd coursehub-client
+   npm install
+   ```
+
+2. **Start Server**
+
+   ```bash
+   npm start
    ```
