@@ -3,3 +3,4 @@ Django==5.1
 sqlparse==0.5.1
 supabase>=0.2.3
 django-environ>=0.8.0
+djangorestframework-simplejwt==5.3.1
