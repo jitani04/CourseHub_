@@ -24,65 +24,73 @@ const SignUp = () => {
   };
 
   return (
-    <Box sx={{ width: '100%', maxWidth: 500, mx: 'auto', mt: 5 }}>
-      <Typography variant="h4" align="center" gutterBottom>
-        Sign Up
-      </Typography>
-      <Stepper activeStep={0} alternativeLabel>
-        <Step>
-          <StepLabel>Register</StepLabel>
-        </Step>
-        <Step>
-          <StepLabel>Complete Profile</StepLabel>
-        </Step>
-      </Stepper>
-      <form onSubmit={handleSignUp} style={{ marginTop: '20px' }}>
-        <TextField
-          label="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          fullWidth
-          margin="normal"
-          required
-        />
-        <TextField
-          label="Email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          fullWidth
-          margin="normal"
-          required
-        />
-        <TextField
-          label="Password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          fullWidth
-          margin="normal"
-          required
-        />
-        <TextField
-          label="Confirm Password"
-          type="password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          fullWidth
-          margin="normal"
-          required
-        />
-        <Box mt={3} display="flex" justifyContent="center">
-          <Button type="submit" variant="contained" color="primary" fullWidth disabled={loading}>
-            {loading ? <CircularProgress size={24} /> : 'Sign Up'}
-          </Button>
+    <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f5f5f5' }}>
+      <Box sx={{ width: '100%', maxWidth: 500 }}>
+        <Typography variant="h4" align="center" gutterBottom>
+          Sign Up
+        </Typography>
+        <Typography variant="subtitle1" align="center" gutterBottom>
+          Create your account to get started
+        </Typography>
+        <Stepper activeStep={0} alternativeLabel>
+          <Step>
+            <StepLabel>Register</StepLabel>
+          </Step>
+          <Step>
+            <StepLabel>Complete Profile</StepLabel>
+          </Step>
+        </Stepper>
+        <Box component="form" onSubmit={handleSignUp} mt={3}>
+          <TextField
+            label="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            fullWidth
+            margin="normal"
+            required
+          />
+          <TextField
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            fullWidth
+            margin="normal"
+            required
+          />
+          <TextField
+            label="Password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            fullWidth
+            margin="normal"
+            required
+          />
+          <TextField
+            label="Confirm Password"
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            fullWidth
+            margin="normal"
+            required
+          />
+          <Box mt={3}>
+            <Button type="submit" variant="contained" color="primary" fullWidth disabled={loading}>
+              {loading ? <CircularProgress size={24} /> : 'Sign Up'}
+            </Button>
+          </Box>
+          {message && (
+            <Typography color="error" align="center" sx={{ mt: 2 }}>
+              {message}
+            </Typography>
+          )}
         </Box>
-        {message && (
-          <Typography color="error" align="center" sx={{ mt: 2 }}>
-            {message}
-          </Typography>
-        )}
-      </form>
+        <Typography align="center" sx={{ mt: 2, color: 'gray' }}>
+          Already have an account? <a href="#" style={{ color: '#3f51b5' }}>Log in</a>
+        </Typography>
+      </Box>
     </Box>
   );
 };
