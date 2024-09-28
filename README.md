@@ -11,7 +11,6 @@ This project is built using **Python Flask** for the backend and **React** for t
 - [Getting Started](#%EF%B8%8F-getting-started)
 - [Backend Setup (Flask)](#-backend-setup-flask)
 - [Frontend Setup (React)](#-frontend-setup-react)
-- [Environment Variables](#3-configure-environment-variables)
 - [Run the Application](#%EF%B8%8F-running-the-application)
 
 ---
