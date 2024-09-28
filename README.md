@@ -6,13 +6,13 @@ This project is built using **Python Flask** for the backend and **React** for t
 
 ## 🚀 Table of Contents
 
-- [Features](#features)
-- [Project Structure](#project-structure)
-- [Getting Started](#getting-started)
-- [Backend Setup (Flask)](#backend-setup-flask)
-- [Frontend Setup (React)](#frontend-setup-react)
-- [Environment Variables](#environment-variables)
-- [Run the Application](#run-the-application)
+- [Features](#-features)
+- [Project Structure](#-project-structure)
+- [Getting Started](#-getting-started)
+- [Backend Setup (Flask)](#-backend-setup-flask)
+- [Frontend Setup (React)](#-frontend-setup-react)
+- [Environment Variables](#-environment-variables)
+- [Run the Application](#-run-the-application)
 
 ---
 
