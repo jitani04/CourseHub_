@@ -51,7 +51,7 @@ export default function LandingPage() {
             <div className="flex flex-col items-center space-y-4 text-center">
               <div className="space-y-2">
                 <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none text-green-800">
-                  Welcome to CourseHub Forum
+                  Welcome to CourseHub
                 </h1>
                 <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
                   Collaborate with fellow students, share knowledge, and excel in your courses.
@@ -65,7 +65,7 @@ export default function LandingPage() {
           </div>
         </section>
         <section className="w-full py-12 md:py-24 lg:py-32 bg-green-50 dark:bg-green-900">
-          <div className="container px-4 md:px-6">
+          <div className="container mx-auto px-4 md:px-6">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12 text-green-800 dark:text-green-100">Key Features</h2>
             <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-3">
               <div className="flex flex-col items-center space-y-2 border-green-200 dark:border-green-700 border p-4 rounded-lg">
@@ -93,9 +93,9 @@ export default function LandingPage() {
           </div>
         </section>
         <section className="w-full py-12 md:py-24 lg:py-32">
-          <div className="container px-4 md:px-6">
+          <div className="container mx-auto px-4 md:px-6">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12 text-green-800 dark:text-green-100">Popular Courses</h2>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
               {["Math 101", "CS 301", "Physics 51"].map((course) => (
                 <div key={course} className="flex flex-col items-center space-y-2 border-green-200 dark:border-green-700 border p-4 rounded-lg">
                   <BookOpen className="h-12 w-12 mb-2 text-green-600 dark:text-green-400" />
