@@ -6,7 +6,7 @@ import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import { Label } from '../components/ui/Label';
 
-function Signin() {
+function SignIn() {
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -57,7 +57,7 @@ function Signin() {
             </Link>
           </p>
         </div>
-        
+
         {error && <p className="text-red-500 text-center">{error}</p>}
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -150,4 +150,4 @@ function Signin() {
   );
 }
 
-export default Signin;
+export default SignIn;

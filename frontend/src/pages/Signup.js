@@ -5,7 +5,7 @@ import { Label } from '../components/ui/Label';
 import { BookOpen, User, Mail, Lock, Eye, EyeOff, Check, ArrowRight } from 'lucide-react'; 
 import { Link } from 'react-router-dom'; 
 
-function SignUpComponent() {
+function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [step, setStep] = useState(1);
@@ -211,4 +211,4 @@ function SignUpComponent() {
   );
 }
 
-export default SignUpComponent;
+export default SignUp;

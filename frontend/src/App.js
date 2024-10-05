@@ -1,8 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LandingPage from './pages/LandingPage';
-import Signup from './pages/Signup';
-import Signin from './pages/Signin';
+import SignUp from './pages/SignUp';
+import SignIn from './pages/SignIn';
 import Dashboard from './pages/Dashboard';
 import PrivateRoute from './components/PrivateRoute';
 
@@ -11,8 +11,8 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/signup" element={<Signup />} />
-        <Route path="/signin" element={<Signin />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/signin" element={<SignIn />} />
         <Route
           path="/dashboard"
           element={
