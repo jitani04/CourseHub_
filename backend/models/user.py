@@ -6,7 +6,7 @@ class UserModel:
     def create_user(
         self,
         email,
-        password,
+        # password,
         username,
         first_name=None,
         last_name=None,
