@@ -37,12 +37,15 @@ CourseHub/                   # Root
 │   ├── models/              # MongoDB document structures
 │   ├── routes/              # Route handlers for API/endpoints
 │   ├── utils/               # Utility functions
-│   └── requirements.txt     # Python dependencies
+│   ├── requirements.txt     # Python dependencies
+│   └── .env                 # Environment variables
 │
 ├── frontend/                # React frontend
 │   ├── public/              # Public assets (index.html, favicon, etc.)
 │   ├── src/                 # React components and pages
 │   │   ├── components/      # Reusable UI components
+│   │   │   ├── ui/          # Custom UI elements (buttons, inputs, etc.) for standardization
+│   │   ├── utils/           # Utility functions for reusable logic and helpers
 │   │   ├── pages/           # Application pages (e.g., Home, Profile)
 │   │   ├── services/        # API services to connect with Flask backend
 │   │   ├── App.js           # Main React app
