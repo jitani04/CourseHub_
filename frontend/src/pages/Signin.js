@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { signin } from '../services/authService'; 
 import { BookOpen, Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react"; 
 import Button from '../components/ui/Button';
@@ -51,13 +51,13 @@ function Signin() {
           <BookOpen className="mx-auto h-12 w-12 text-green-600" />
           <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Sign in to your Account</h2>
           <p className="mt-2 text-sm text-gray-600">
-            Or{' '}
-            <a href="/sign-up" className="font-medium text-green-600 hover:text-green-500 transition-colors duration-200">
+            Or&nbsp;
+            <Link to="/signup" className="font-medium text-green-600 hover:text-green-500 transition-colors duration-200">
               create an account
-            </a>
+            </Link>
           </p>
         </div>
-
+        
         {error && <p className="text-red-500 text-center">{error}</p>}
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
