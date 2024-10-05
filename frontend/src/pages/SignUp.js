@@ -1,26 +1,54 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { signup } from '../services/authService';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import { Label } from '../components/ui/Label';
-import { BookOpen, User, Mail, Lock, Eye, EyeOff, Check, ArrowRight } from 'lucide-react'; 
-import { Link } from 'react-router-dom'; 
+import { BookOpen, User, Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
 
 function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [step, setStep] = useState(1);
+
+  // State variables for form inputs
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
-  // Handle submit for the signup form
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setStep(2); // Progress to step 2 (Verification)
-  };
+  // Error handling
+  const [error, setError] = useState('');
 
-  // Handle verification submission
-  const handleVerification = (e) => {
+
+  // Handle submit
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setStep(3); // Progress to step 3 (Account creation success)
+
+    // Clear previous errors
+    setError('');
+
+    // Validate password
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    // User data
+    const userData = {
+      username,
+      email,
+      password,
+    };
+
+    try {
+      await signup(userData);
+
+      // Progress to step 2: Check their email
+      setStep(2);
+    } catch (err) {
+      setError(err.message || 'Signup failed');
+    }
   };
 
   return (
@@ -30,15 +58,20 @@ function SignUp() {
           <BookOpen className="mx-auto h-12 w-12 text-green-600" />
           <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Create your account</h2>
           <p className="mt-2 text-sm text-gray-600">
-            Or&nbsp;
-            <Link to="/signin" className="font-medium text-green-600 hover:text-green-500 transition-colors duration-200">
+            Or{' '}
+            <Link
+              to="/signin"
+              className="font-medium text-green-600 hover:text-green-500 transition-colors duration-200"
+            >
               sign in to your account
             </Link>
           </p>
         </div>
+
         {step === 1 && (
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
             <div className="rounded-2xl bg-white shadow-xl p-8 space-y-6">
+              {error && <p className="text-red-500 text-sm">{error}</p>}
               <div className="space-y-1">
                 <Label htmlFor="username" className="block text-sm font-medium text-gray-700">
                   Username
@@ -54,6 +87,8 @@ function SignUp() {
                     required
                     className="block w-full pl-10 sm:text-sm border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
                     placeholder="Choose a username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                   />
                 </div>
               </div>
@@ -93,6 +128,8 @@ function SignUp() {
                     required
                     className="block w-full pl-10 pr-10 sm:text-sm border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
                     placeholder="Create a password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                   />
                   <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
                     <button
@@ -120,6 +157,8 @@ function SignUp() {
                     required
                     className="block w-full pl-10 pr-10 sm:text-sm border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
                     placeholder="Confirm your password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
                   />
                   <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
                     <button
@@ -144,65 +183,24 @@ function SignUp() {
             </div>
           </form>
         )}
+
         {step === 2 && (
-          <form className="mt-8 space-y-6" onSubmit={handleVerification}>
+          <div className="mt-8 space-y-6">
             <div className="rounded-2xl bg-white shadow-xl p-8 space-y-6">
               <p className="text-center text-sm text-gray-600 mb-4">
-                We've sent a verification code to {email}. Please enter it below.
+                We've sent a verification email to <strong>{email}</strong>. Please check your inbox and verify your
+                email address.
               </p>
-              <div className="space-y-1">
-                <Label htmlFor="verification-code" className="block text-sm font-medium text-gray-700">
-                  Verification Code
-                </Label>
-                <div className="mt-1 relative rounded-md shadow-sm">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Mail className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <Input
-                    id="verification-code"
-                    name="verification-code"
-                    type="text"
-                    required
-                    className="block w-full pl-10 sm:text-sm border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-                    placeholder="Enter verification code"
-                  />
-                </div>
-              </div>
-            </div>
-            <div>
-              <Button
-                type="submit"
-                className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
-              >
-                Verify Email
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </div>
-          </form>
-        )}
-        {step === 3 && (
-          <div className="mt-8 space-y-6">
-            <div className="rounded-2xl bg-green-50 p-8 shadow-xl">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <Check className="h-8 w-8 text-green-400" aria-hidden="true" />
-                </div>
-                <div className="ml-3">
-                  <h3 className="text-xl font-medium text-green-800">Account created successfully</h3>
-                  <div className="mt-2 text-sm text-green-700">
-                    <p>Your account has been created and email verified. You can now sign in to your account.</p>
-                  </div>
-                  <div className="mt-4">
-                    <Link
-                      to="/sign-in"
-                      className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
-                    >
-                      Go to Sign In
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </div>
-                </div>
-              </div>
+              <p className="text-center text-sm text-gray-600">
+                After verifying, you can{' '}
+                <Link
+                  to="/signin"
+                  className="font-medium text-green-600 hover:text-green-500 transition-colors duration-200"
+                >
+                  sign in
+                </Link>
+                .
+              </p>
             </div>
           </div>
         )}
