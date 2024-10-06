@@ -4,6 +4,7 @@ import LandingPage from './pages/LandingPage';
 import SignUp from './pages/SignUp';
 import SignIn from './pages/SignIn';
 import Dashboard from './pages/Dashboard';
+import { StudentProfile } from './pages/StudentProfile';
 import PrivateRoute from './components/PrivateRoute';
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signin" element={<SignIn />} />
+        <Route path="/student-profile" element={<StudentProfile />} />
         <Route
           path="/dashboard"
           element={
