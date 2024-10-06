@@ -93,7 +93,7 @@ def signup():
 
 
 def send_verification_email(email, code):
-    SENDER = current_app.config['EMAIL_FROM']
+    SENDER = f"CourseHub <{current_app.config['EMAIL_FROM']}>"
     RECIPIENT = email
     AWS_REGION = current_app.config['AWS_REGION_NAME']
     SUBJECT = 'Your Verification Code'
@@ -144,7 +144,7 @@ def verify_email():
     try:
         # Find the user in MongoDB
         user = user_collection.find_one({'email': email})
-        print("User found in DB:", user)
+        # print("User found in DB:", user)
     except PyMongoError as e:
         print("Error querying MongoDB:", str(e))
         return jsonify({'message': 'Database error', 'details': str(e)}), 500
