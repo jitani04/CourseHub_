@@ -5,6 +5,7 @@ import { BookOpen, Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import { Label } from '../components/ui/Label';
+import CustomLoader from '../components/ui/CustomLoader';
 
 function SignIn() {
   const [formData, setFormData] = useState({
@@ -12,6 +13,7 @@ function SignIn() {
     password: ''
   });
   const [showPassword, setShowPassword] = useState(false); 
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
@@ -28,12 +30,14 @@ function SignIn() {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true); // Set loading to true when API call starts
     try {
       const data = await signin(email, password);
       
       // Make sure 'data' is defined and contains the expected fields
       if (!data || !data.jwt_token) {
         setError('Failed to sign in: Invalid response from server');
+        setIsLoading(false); // Reset loading state on failure
         return;
       }
 
@@ -50,10 +54,12 @@ function SignIn() {
       // Redirect to dashboard
       navigate('/dashboard');
     } catch (err) {
+      console.error('Error during sign-in:', err);
       setError(err.response?.data?.message || 'Signin failed');
+    } finally {
+      setIsLoading(false); 
     }
   };
-
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-white py-12 px-4 sm:px-6 lg:px-8">
@@ -73,7 +79,6 @@ function SignIn() {
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-2xl bg-white shadow-xl p-8 space-y-6">
-            {/* Email Input */}
             <div className="space-y-1">
               <Label htmlFor="email" className="block text-sm font-medium text-gray-700">
                 Email address
@@ -145,14 +150,23 @@ function SignIn() {
             </div>
           </div>
 
-          {/* Submit Button */}
           <div>
             <Button
               type="submit"
+              disabled={isLoading}
               className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
             >
-              Sign in
-              <ArrowRight className="ml-2 h-4 w-4" />
+              {isLoading ? (
+                <>
+                  <CustomLoader />
+                  <span className="ml-2">Signing in...</span>
+                </>
+              ) : (
+                <>
+                  Sign in
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </>
+              )}
             </Button>
           </div>
         </form>
