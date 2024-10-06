@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { signup, verifyEmailCode } from '../services/authService';
 import Button from '../components/ui/Button';
@@ -11,61 +11,31 @@ function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [step, setStep] = useState(1);
+
+  // State variables for form inputs
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [verificationCode, setVerificationCode] = useState(['', '', '', '', '', '']);
-
-  const verificationInputRefs = useRef([]);
+  const [verificationCode, setVerificationCode] = useState('');
 
   // Error handling
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    setError('');
+    setError(''); 
   }, [step]);
-
-  useEffect(() => {
-    if (step === 2) {
-      verificationInputRefs.current[0]?.focus();
-    }
-  }, [step]);
-
-  const handleVerificationCodeChange = (index, value) => {
-    const newCode = [...verificationCode];
-    newCode[index] = value;
-    setVerificationCode(newCode);
-
-    if (value && index < 5) {
-      verificationInputRefs.current[index + 1]?.focus();
-    }
-  };
-
-  const handleVerificationCodePaste = (e) => {
-    e.preventDefault();
-    const pastedData = e.clipboardData.getData('text');
-    const pastedCode = pastedData.slice(0, 6).split('');
-    const newCode = [...verificationCode];
-    pastedCode.forEach((digit, index) => {
-      if (index < 6) newCode[index] = digit;
-    });
-    setVerificationCode(newCode);
-    verificationInputRefs.current[pastedCode.length - 1]?.focus();
-  };
 
   // Handle submit
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
 
+    // Clear previous errors
     setError('');
 
     // Validate password
     if (password !== confirmPassword) {
       setError('Passwords do not match');
-      setIsLoading(false);
       return;
     }
 
@@ -77,28 +47,26 @@ function SignUp() {
     };
 
     try {
-      // Call the signup API
       await signup(userData);
-      setStep(2); 
+
+      // Progress to step 2: Check their email
+      setStep(2);
     } catch (err) {
       setError(err.message || 'Signup failed');
-    } finally {
-      setIsLoading(false);
     }
   };
 
   const handleVerification = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
 
     try {
-      // Call the verify email API
-      await verifyEmailCode(email, verificationCode.join(''));
+      // Call verifyEmailCode function from authService.js
+      await verifyEmailCode(email, verificationCode);
+
+      // Progress to step 3: Show success message
       setStep(3);
     } catch (err) {
       setError(err.message || 'Verification failed');
-    } finally {
-      setIsLoading(false); 
     }
   };
 
@@ -226,20 +194,10 @@ function SignUp() {
             <div>
               <Button
                 type="submit"
-                disabled={isLoading}
                 className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
               >
-                {isLoading ? (
-                  <>
-                    <CustomLoader /> {/* Use shared CustomLoader */}
-                    <span className="ml-2">Creating account...</span>
-                  </>
-                ) : (
-                  <>
-                    Sign up
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </>
-                )}
+                Sign up
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
           </form>
@@ -254,21 +212,20 @@ function SignUp() {
                 <Label htmlFor="verification-code" className="block text-sm font-medium text-gray-700">
                   Verification Code
                 </Label>
-                <div className="flex justify-between mt-1" onPaste={handleVerificationCodePaste}>
-                  {verificationCode.map((digit, index) => (
-                    <Input
-                      key={index}
-                      ref={(el) => {
-                        verificationInputRefs.current[index] = el;
-                      }}
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={1}
-                      value={digit}
-                      onChange={(e) => handleVerificationCodeChange(index, e.target.value)}
-                      className="w-12 h-12 text-center text-2xl border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
-                    />
-                  ))}
+                <div className="mt-1 relative rounded-md shadow-sm">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Mail className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <Input
+                    id="verification-code"
+                    name="verification-code"
+                    type="text"
+                    required
+                    className="block w-full pl-10 sm:text-sm border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                    placeholder="Enter verification code"
+                    value={verificationCode}  // Bind to state
+                    onChange={(e) => setVerificationCode(e.target.value)}  // Update state on input change
+                  />
                 </div>
               </div>
             </div>
@@ -277,17 +234,8 @@ function SignUp() {
                 type="submit"
                 className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
               >
-                {isLoading ? (
-                  <>
-                    <CustomLoader />
-                    <span className="ml-2">Verifying...</span>
-                  </>
-                ) : (
-                  <>
-                    Verify Email
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </>
-                )}
+                Verify Email
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>
           </form>
@@ -306,7 +254,7 @@ function SignUp() {
                   </div>
                   <div className="mt-4">
                     <Link
-                      to="/signin"
+                      href="/sign-in"
                       className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
                     >
                       Go to Sign In

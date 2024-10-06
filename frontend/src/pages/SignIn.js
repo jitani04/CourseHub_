@@ -5,7 +5,6 @@ import { BookOpen, Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import Label from '../components/ui/Label';
-import CustomLoader from '../components/ui/CustomLoader';
 
 function SignIn() {
   const [formData, setFormData] = useState({
