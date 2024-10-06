@@ -26,10 +26,18 @@ function SignIn() {
   };
 
   // Handle form submission
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const data = await signin(email, password);
+      
+      // Make sure 'data' is defined and contains the expected fields
+      if (!data || !data.jwt_token) {
+        setError('Failed to sign in: Invalid response from server');
+        return;
+      }
+
+      // Save the JWT token and user info
       localStorage.setItem('jwt_token', data.jwt_token);
       localStorage.setItem('user', JSON.stringify({
         user_id: data.user_id,
@@ -38,11 +46,14 @@ function SignIn() {
         first_name: data.first_name,
         last_name: data.last_name
       }));
+
+      // Redirect to dashboard
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response.data.message || 'Signin failed');
+      setError(err.response?.data?.message || 'Signin failed');
     }
   };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-white py-12 px-4 sm:px-6 lg:px-8">
