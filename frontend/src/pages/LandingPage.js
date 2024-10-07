@@ -40,7 +40,7 @@ export default function LandingPage() {
           <Link className="text-sm font-medium hover:text-green-600 hover:underline underline-offset-4" href="#">
             About
           </Link>
-          <Link className="text-sm font-medium hover:text-green-600 hover:underline underline-offset-4" href="#">
+          <Link className="text-sm font-medium hover:text-green-600 hover:underline underline-offset-4" to="/signin">
             Sign In
           </Link>
         </nav>

@@ -9,3 +9,6 @@ Flask-PyMongo==2.3.0
 supabase==2.7.4
 pylint==2.17.4
 black==24.8.0
+boto3==1.28.52
+flask-bcrypt==1.0.1
+requests==2.31.0
