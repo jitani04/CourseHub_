@@ -1,14 +1,15 @@
-from flask import Blueprint, request, jsonify, current_app
-from models.user import UserModel
 import random
 import string
 import datetime
+
+from flask import Blueprint, request, jsonify, current_app
+from flask_bcrypt import generate_password_hash, check_password_hash
 import boto3
 from botocore.exceptions import ClientError
-from flask_bcrypt import generate_password_hash, check_password_hash
 import requests
 from pymongo.errors import PyMongoError
-# from flask_jwt_extended import create_access_token
+
+from models.user import UserModel
 
 auth_bp = Blueprint("auth_bp", __name__)
 
@@ -32,60 +33,76 @@ def signup():
         return jsonify({"message": "User already exists"}), 409
 
     # Hash the password
-    hashed_password = generate_password_hash(password).decode('utf-8')
+    hashed_password = generate_password_hash(password).decode("utf-8")
 
     # Generate a verification code
-    verification_code = ''.join(random.choices(string.digits, k=6))
-    verification_code_expiry = datetime.datetime.utcnow() + datetime.timedelta(minutes=10)
+    verification_code = "".join(random.choices(string.digits, k=6))
+    verification_code_expiry = datetime.datetime.utcnow() + datetime.timedelta(
+        minutes=10
+    )
 
-    try:
-        # Send verification code via Amazon SES
-        if not send_verification_email(email, verification_code):
-            return jsonify({'message': 'Failed to send verification email'}), 500
-    except Exception as e:
-        return jsonify({'message': f'An error occurred: {str(e)}'}), 500
+    # Send verification code via Amazon SES
+    if not send_verification_email(email, verification_code):
+        return jsonify({"message": "Failed to send verification email"}), 500
 
     # Create user in Supabase using Admin API
     try:
-        supabase_url = current_app.config['SUPABASE_URL']
-        supabase_key = current_app.config['SUPABASE_KEY']
+        supabase_url = current_app.config["SUPABASE_URL"]
+        supabase_key = current_app.config["SUPABASE_KEY"]
 
         headers = {
-            'apikey': supabase_key,
-            'Authorization': f'Bearer {supabase_key}',
-            'Content-Type': 'application/json',
+            "apikey": supabase_key,
+            "Authorization": f"Bearer {supabase_key}",
+            "Content-Type": "application/json",
         }
         payload = {
-            'email': email,
-            'password': password,  
-            'email_confirm': False,
-            'user_metadata': {
-                'username': username,
-                'first_name': first_name,
-                'last_name': last_name,
-            }
+            "email": email,
+            "password": password,
+            "email_confirm": False,
+            "user_metadata": {
+                "username": username,
+                "first_name": first_name,
+                "last_name": last_name,
+            },
         }
-        response = requests.post(f'{supabase_url}/auth/v1/admin/users', headers=headers, json=payload)
+        response = requests.post(
+            f"{supabase_url}/auth/v1/admin/users",
+            headers=headers,
+            json=payload,
+            timeout=10,
+        )
         if response.status_code != 200:
-            return jsonify({'message': 'Error creating user in Supabase', 'details': response.text}), 400
+            return (
+                jsonify(
+                    {
+                        "message": "Error creating user in Supabase",
+                        "details": response.text,
+                    }
+                ),
+                400,
+            )
 
         supabase_user = response.json()
-        supabase_user_id = supabase_user['id']
+        supabase_user_id = supabase_user["id"]
     except Exception as e:
-        return jsonify({'message': 'Error creating user in Supabase', 'details': str(e)}), 500
-
+        return (
+            jsonify(
+                {"message": "Error creating user in Supabase", "details": str(e)}
+            ),
+            500,
+        )
 
     # Store user data in MongoDB
     user_data = {
-        'username': username,
-        'email': email,
-        'password': hashed_password,
-        'first_name': first_name,
-        'last_name': last_name,
-        'supabase_id': supabase_user_id,
-        'verified': False,
-        'verification_code': verification_code,
-        'verification_code_expiry': verification_code_expiry
+        "username": username,
+        "email": email,
+        "password": hashed_password,
+        "first_name": first_name,
+        "last_name": last_name,
+        "supabase_id": supabase_user_id,
+        "verified": False,
+        "verification_code": verification_code,
+        "verification_code_expiry": verification_code_expiry,
     }
     user_model.collection.insert_one(user_data)
 
@@ -95,28 +112,30 @@ def signup():
 def send_verification_email(email, code):
     SENDER = f"CourseHub <{current_app.config['EMAIL_FROM']}>"
     RECIPIENT = email
-    AWS_REGION = current_app.config['AWS_REGION_NAME']
-    SUBJECT = 'Your Verification Code'
+    AWS_REGION = current_app.config["AWS_REGION_NAME"]
+    SUBJECT = "Your Verification Code"
     BODY_TEXT = f"Your verification code is: {code}"
-    BODY_HTML = f"<html><body><p>Your verification code is: <strong>{code}</strong></p></body></html>"
+    BODY_HTML = (
+        f"<html><body><p>Your verification code is: <strong>{code}</strong></p></body></html>"
+    )
     CHARSET = "UTF-8"
 
     client = boto3.client(
-        'ses',
-        aws_access_key_id=current_app.config['AWS_ACCESS_KEY_ID'],
-        aws_secret_access_key=current_app.config['AWS_SECRET_ACCESS_KEY'],
-        region_name=AWS_REGION
+        "ses",
+        aws_access_key_id=current_app.config["AWS_ACCESS_KEY_ID"],
+        aws_secret_access_key=current_app.config["AWS_SECRET_ACCESS_KEY"],
+        region_name=AWS_REGION,
     )
 
     try:
-        response = client.send_email(
-            Destination={'ToAddresses': [RECIPIENT]},
+        _response = client.send_email(
+            Destination={"ToAddresses": [RECIPIENT]},
             Message={
-                'Body': {
-                    'Html': {'Charset': CHARSET, 'Data': BODY_HTML},
-                    'Text': {'Charset': CHARSET, 'Data': BODY_TEXT},
+                "Body": {
+                    "Html": {"Charset": CHARSET, "Data": BODY_HTML},
+                    "Text": {"Charset": CHARSET, "Data": BODY_TEXT},
                 },
-                'Subject': {'Charset': CHARSET, 'Data': SUBJECT},
+                "Subject": {"Charset": CHARSET, "Data": SUBJECT},
             },
             Source=SENDER,
         )
@@ -126,97 +145,99 @@ def send_verification_email(email, code):
         return False
 
 
-@auth_bp.route('/verify-email', methods=['POST'])
+@auth_bp.route("/verify-email", methods=["POST"])
 def verify_email():
     data = request.get_json()
-    email = data.get('email')
-    code = data.get('code')
-
-    # # Log the incoming request data
-    # print("Verification Request - Email:", email)
-    # print("Verification Request - Code:", code)
+    email = data.get("email")
+    code = data.get("code")
 
     if not all([email, code]):
-        return jsonify({'message': 'Email and verification code are required'}), 400
+        return jsonify({"message": "Email and verification code are required"}), 400
 
-    user_collection = current_app.db['users']
-    
+    user_collection = current_app.db["users"]
+
     try:
         # Find the user in MongoDB
-        user = user_collection.find_one({'email': email})
-        # print("User found in DB:", user)
+        user = user_collection.find_one({"email": email})
     except PyMongoError as e:
         print("Error querying MongoDB:", str(e))
-        return jsonify({'message': 'Database error', 'details': str(e)}), 500
+        return jsonify({"message": "Database error", "details": str(e)}), 500
 
     if not user:
-        return jsonify({'message': 'User not found'}), 404
+        return jsonify({"message": "User not found"}), 404
 
-    if user.get('verified'):
-        return jsonify({'message': 'Email already verified'}), 400
+    if user.get("verified"):
+        return jsonify({"message": "Email already verified"}), 400
 
     # Check if the verification code matches
-    if user.get('verification_code') != code:
-        print("Invalid verification code. Expected:", user.get('verification_code'))
-        return jsonify({'message': 'Invalid verification code'}), 400
+    if user.get("verification_code") != code:
+        print("Invalid verification code. Expected:", user.get("verification_code"))
+        return jsonify({"message": "Invalid verification code"}), 400
 
     # Check if the verification code has expired
-    if datetime.datetime.utcnow() > user.get('verification_code_expiry'):
+    if datetime.datetime.utcnow() > user.get("verification_code_expiry"):
         print("Verification code expired.")
-        return jsonify({'message': 'Verification code expired'}), 400
+        return jsonify({"message": "Verification code expired"}), 400
 
     # Update user's email confirmation in Supabase
     try:
-        supabase_url = current_app.config['SUPABASE_URL']
-        supabase_key = current_app.config['SUPABASE_KEY']
-        supabase_user_id = user.get('supabase_id')
+        supabase_url = current_app.config["SUPABASE_URL"]
+        supabase_key = current_app.config["SUPABASE_KEY"]
+        supabase_user_id = user.get("supabase_id")
 
         headers = {
-            'apikey': supabase_key,
-            'Authorization': f'Bearer {supabase_key}',
-            'Content-Type': 'application/json',
+            "apikey": supabase_key,
+            "Authorization": f"Bearer {supabase_key}",
+            "Content-Type": "application/json",
         }
 
-        payload = {
-            'email_confirm': True
-        }
+        payload = {"email_confirm": True}
 
         # Update the email confirmation status in Supabase
         response = requests.put(
-            f'{supabase_url}/auth/v1/admin/users/{supabase_user_id}',
+            f"{supabase_url}/auth/v1/admin/users/{supabase_user_id}",
             headers=headers,
-            json=payload
+            json=payload,
+            timeout=10,
         )
 
-        # print("Supabase update response:", response.status_code, response.text)
-
         if response.status_code != 200:
-            return jsonify({
-                'message': 'Error updating user in Supabase',
-                'details': response.text
-            }), 400
+            return (
+                jsonify(
+                    {
+                        "message": "Error updating user in Supabase",
+                        "details": response.text,
+                    }
+                ),
+                400,
+            )
 
     except Exception as e:
         print("Error updating Supabase:", str(e))
-        return jsonify({
-            'message': 'Error updating user in Supabase',
-            'details': str(e)
-        }), 500
+        return (
+            jsonify(
+                {"message": "Error updating user in Supabase", "details": str(e)}
+            ),
+            500,
+        )
 
     # Update user in MongoDB
     try:
-        result = user_collection.update_one(
-            {'email': email},
-            {'$set': {'verified': True}, '$unset': {'verification_code': '', 'verification_code_expiry': ''}}
+        _result = user_collection.update_one(
+            {"email": email},
+            {
+                "$set": {"verified": True},
+                "$unset": {
+                    "verification_code": "",
+                    "verification_code_expiry": "",
+                },
+            },
         )
-        # print("MongoDB update result:", result.modified_count)
     except PyMongoError as e:
         print("Error updating MongoDB:", str(e))
-        return jsonify({'message': 'Database error', 'details': str(e)}), 500
+        return jsonify({"message": "Database error", "details": str(e)}), 500
 
-    return jsonify({'message': 'Email verified successfully'}), 200
-
-
+    return jsonify({"message": "Email verified successfully"}), 200
 
 
 @auth_bp.route("/signin", methods=["POST"])
@@ -241,13 +262,15 @@ def signin():
 
     # Authenticate with Supabase
     try:
-        response = current_app.supabase.auth.sign_in_with_password({"email": email, "password": password})
+        response = current_app.supabase.auth.sign_in_with_password(
+            {"email": email, "password": password}
+        )
 
         # Check if there was an error in the response
         if response.user is None:
             return jsonify({"message": response.error.message}), 401
 
-        jwt_token = response.session.access_token  
+        jwt_token = response.session.access_token
 
         return (
             jsonify(

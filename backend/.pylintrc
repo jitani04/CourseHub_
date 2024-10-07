@@ -422,6 +422,8 @@ disable=raw-checker-failed,
         C0103,     # Invalid variable name
         W0718,    # Undefined variable
         E1121,     # Too many positional arguments
+        R0914,     # Too many local variables
+        R0911,     # Too many return statements
 
 
 [FORMAT]

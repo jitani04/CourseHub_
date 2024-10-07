@@ -23,7 +23,6 @@ function App() {
             </PrivateRoute>
           }
         />
-        {/* Add other routes here */}
       </Routes>
     </Router>
   );
