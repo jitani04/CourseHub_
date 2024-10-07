@@ -16,13 +16,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "../components/ui/Popover";
-import Badge from "../components/ui/Badge";
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-} from "../components/ui/Tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/Avatar";
 import {
   Card,
@@ -43,6 +36,8 @@ import {
   X,
   Check,
   ImagePlus,
+  Search,
+  ChevronDown,
 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "../lib/utils";
@@ -73,10 +68,29 @@ const topics = [
 
 const diceBearCategories = [
   "adventurer",
+  "adventurer-neutral",
   "avataaars",
+  "avataaars-neutral",
   "big-ears",
+  "big-ears-neutral",
+  "big-smile",
   "bottts",
+  "bottts-neutral",
+  "croodles",
+  "croodles-neutral",
+  "fun-emoji",
+  "icons",
+  "identicon",
+  "initials",
+  "lorelei",
+  "lorelei-neutral",
   "micah",
+  "miniavs",
+  "open-peeps",
+  "personas",
+  "pixel-art",
+  "pixel-art-neutral",
+  "shapes",
 ];
 
 function StudentProfile() {
@@ -100,6 +114,8 @@ function StudentProfile() {
   const [selectedCategory, setSelectedCategory] = useState(
     diceBearCategories[0],
   );
+  const [avatarPage, setAvatarPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     // Fetch schools and majors from API (replace with actual API calls)
@@ -168,6 +184,14 @@ function StudentProfile() {
       certifications,
       avatar: customAvatar ? "Custom Avatar" : avatar,
     });
+  };
+
+  const filteredCategories = diceBearCategories.filter((category) =>
+    category.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
+
+  const handleLoadMore = () => {
+    setAvatarPage((prevPage) => prevPage + 1);
   };
 
   const steps = [
@@ -264,67 +288,91 @@ function StudentProfile() {
                           <p className="text-sm text-gray-500 mb-4">
                             Upload a photo or choose an avatar
                           </p>
-                          <Tabs
-                            value={selectedCategory}
-                            onValueChange={setSelectedCategory}
-                            className="w-full"
-                          >
-                            <TabsList className="grid w-full grid-cols-5">
-                              {diceBearCategories.map((category) => (
-                                <TabsTrigger
-                                  key={category}
-                                  value={category}
-                                  className="text-xs"
-                                >
-                                  {category}
-                                </TabsTrigger>
-                              ))}
-                            </TabsList>
-                            {diceBearCategories.map((category) => (
-                              <TabsContent key={category} value={category}>
-                                <ScrollArea className="h-48">
-                                  <div className="grid grid-cols-5 gap-4">
-                                    {Array.from({ length: 15 }, (_, i) => {
-                                      const avatarUrl = generateAvatarUrl(
-                                        category,
-                                        `avatar-${i}`,
-                                      );
-                                      const isSelected = avatar === avatarUrl;
+                          <div className="mb-4">
+                            <Select
+                              onValueChange={setSelectedCategory}
+                              value={selectedCategory}
+                            >
+                              <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Select avatar category" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <div className="flex items-center px-3 pb-2">
+                                  <Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+                                  <Input
+                                    placeholder="Search categories..."
+                                    value={searchTerm}
+                                    onChange={(e) =>
+                                      setSearchTerm(e.target.value)
+                                    }
+                                    className="h-8 w-full"
+                                  />
+                                </div>
+                                {filteredCategories.map((category) => (
+                                  <SelectItem key={category} value={category}>
+                                    {category}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
 
-                                      return (
-                                        <button
-                                          key={i}
-                                          type="button"
-                                          onClick={() =>
-                                            handleAvatarSelect(avatarUrl)
-                                          }
-                                          className={cn(
-                                            "flex items-center justify-center w-14 h-14 rounded-full transition-all duration-300 ease-in-out transform hover:scale-110",
-                                            isSelected
-                                              ? "ring-2 ring-green-500 ring-offset-2"
-                                              : "hover:ring-2 hover:ring-green-300 hover:ring-offset-2",
-                                          )}
-                                        >
-                                          <Avatar className="w-12 h-12">
-                                            <AvatarImage
-                                              src={avatarUrl}
-                                              alt={`${category} avatar ${i + 1}`}
-                                            />
-                                            <AvatarFallback>AV</AvatarFallback>
-                                          </Avatar>
-                                          {isSelected && (
-                                            <div className="absolute inset-0 flex items-center justify-center bg-green-500 bg-opacity-50 rounded-full">
-                                              <Check className="w-6 h-6 text-white" />
-                                            </div>
-                                          )}
-                                        </button>
-                                      );
-                                    })}
-                                  </div>
-                                </ScrollArea>
-                              </TabsContent>
-                            ))}
-                          </Tabs>
+                          <ScrollArea className="h-48">
+                            <div className="grid grid-cols-5 gap-4">
+                              {Array.from(
+                                { length: avatarPage * 15 },
+                                (_, i) => {
+                                  const avatarUrl = generateAvatarUrl(
+                                    selectedCategory,
+                                    `avatar-${i}`,
+                                  );
+                                  const isSelected = avatar === avatarUrl;
+
+                                  return (
+                                    <button
+                                      key={i}
+                                      type="button"
+                                      onClick={() =>
+                                        handleAvatarSelect(avatarUrl)
+                                      }
+                                      className={cn(
+                                        "flex items-center justify-center w-14 h-14 rounded-full transition-all duration-300 ease-in-out transform hover:scale-110",
+                                        isSelected
+                                          ? "ring-2 ring-green-500 ring-offset-2"
+                                          : "hover:ring-2 hover:ring-green-300 hover:ring-offset-2",
+                                      )}
+                                    >
+                                      <Avatar className="w-12 h-12">
+                                        <AvatarImage
+                                          src={avatarUrl}
+                                          alt={`${selectedCategory} avatar ${i + 1}`}
+                                        />
+                                        <AvatarFallback>AV</AvatarFallback>
+                                      </Avatar>
+                                      {isSelected && (
+                                        <div className="absolute inset-0 flex items-center justify-center bg-green-500 bg-opacity-50 rounded-full">
+                                          <Check className="w-6 h-6 text-white" />
+                                        </div>
+                                      )}
+                                    </button>
+                                  );
+                                },
+                              )}
+                            </div>
+                          </ScrollArea>
+                          <div className="mt-4 flex justify-center">
+                            <Button
+                              type="button"
+                              onClick={handleLoadMore}
+                              variant="outline"
+                              className="group relative py-2 px-4 border border-green-400 text-green-600 rounded-full hover:bg-green-50 transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50"
+                            >
+                              <span className="absolute left-0 inset-y-0 flex items-center pl-3">
+                                <ChevronDown className="h-5 w-5 text-green-500 group-hover:text-green-400 transition-colors duration-300 ease-in-out" />
+                              </span>
+                              <span className="pl-6">Load More Avatars</span>
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     </CardContent>
