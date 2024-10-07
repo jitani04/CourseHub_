@@ -93,7 +93,7 @@ const diceBearCategories = [
   "shapes",
 ];
 
-function StudentProfile() {
+function StudentProfileBackup() {
   const [step, setStep] = useState(1);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -801,4 +801,4 @@ function StudentProfile() {
   );
 }
 
-export default StudentProfile;
+export default StudentProfileBackup;
