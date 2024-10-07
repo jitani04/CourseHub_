@@ -1,11 +1,11 @@
 from flask import Flask
 from flask_cors import CORS
+
 # from flask_jwt_extended import JWTManager
 from pymongo import MongoClient
 from config import Config
 from supabase import create_client, Client
 from routes.auth import auth_bp
-
 
 
 def create_app():
