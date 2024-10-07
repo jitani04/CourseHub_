@@ -4,7 +4,7 @@ import LandingPage from './pages/LandingPage';
 import SignUp from './pages/SignUp';
 import SignIn from './pages/SignIn';
 import Dashboard from './pages/Dashboard';
-import { StudentProfile } from './pages/StudentProfile';
+import StudentProfile from './pages/StudentProfile'
 import PrivateRoute from './components/PrivateRoute';
 
 function App() {
