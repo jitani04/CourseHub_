@@ -45,7 +45,7 @@ function StudentProfile() {
             Complete Your Student Profile
           </h2>
           <p className="mt-2 text-sm text-gray-600">
-            Help us personalize your CourseHub experience
+            Help us personalize your student experience
           </p>
         </div>
         <Card className="bg-white shadow-2xl rounded-3xl overflow-hidden">

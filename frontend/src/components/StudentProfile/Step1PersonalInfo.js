@@ -171,19 +171,20 @@ function Step1PersonalInfo({
                   })}
                 </div>
               </ScrollArea>
-              <div className="mt-4 flex justify-center">
+            <div className="mt-4 flex justify-center">
                 <Button
-                  type="button"
-                  onClick={handleLoadMore}
-                  variant="outline"
-                  className="group relative py-2 px-4 border border-green-400 text-green-600 rounded-full hover:bg-green-50 transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50"
+                    type="button"
+                    onClick={handleLoadMore}
+                    variant="outline"
+                    className="group relative py-2 px-4 border border-green-400 text-green-600 rounded-full hover:bg-green-50 transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50 ml-[-30px]"
                 >
-                  <span className="absolute left-0 inset-y-0 flex items-center pl-3">
+                    <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                     <ChevronDown className="h-5 w-5 text-green-500 group-hover:text-green-400 transition-colors duration-300 ease-in-out" />
-                  </span>
-                  <span className="pl-6">Load More Avatars</span>
+                    </span>
+                    <span className="pl-6">Load More Avatars</span>
                 </Button>
-              </div>
+                </div>
+
             </div>
           </div>
         </CardContent>

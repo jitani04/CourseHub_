@@ -1,25 +1,19 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Button from "../ui/Button";
 import Input from "../ui/Input";
 import Label from "../ui/Label";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "../ui/Select";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "../ui/Popover";
 import Calendar from "../ui/Calendar";
-import { fetchSchools, fetchMajors } from '../../utils/schoolService';
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
-import { useState, useEffect } from 'react';
+
+const API_KEY = process.env.REACT_APP_COLLEGE_SCORECARD_API_KEY;
+const BASE_URL = 'https://api.data.gov/ed/collegescorecard/v1/schools';
 
 function Step2Education({
   school,
@@ -33,18 +27,75 @@ function Step2Education({
 }) {
   const [schools, setSchools] = useState([]);
   const [majors, setMajors] = useState([]);
+  const [schoolSearchTerm, setSchoolSearchTerm] = useState('');
+  const [majorSearchTerm, setMajorSearchTerm] = useState('');
 
-  // Fetch the schools and majors
-  useEffect(() => {
-    const loadSchoolsAndMajors = async () => {
-      const fetchedSchools = await fetchSchools();
-      const fetchedMajors = await fetchMajors();
-      setSchools(fetchedSchools);
-      setMajors(fetchedMajors);
-    };
-
-    loadSchoolsAndMajors();
+  const fetchSchools = useCallback(async (search = '') => {
+    try {
+      const response = await fetch(
+        `${BASE_URL}?api_key=${API_KEY}&school.name=${search}&fields=id,school.name&per_page=20`
+      );
+      const data = await response.json();
+      setSchools(
+        data.results.map((school) => ({
+          id: school.id,
+          name: school['school.name'],
+        }))
+      );
+    } catch (error) {
+      console.error('Error fetching schools:', error);
+    }
   }, []);
+
+  const fetchMajors = useCallback(async (schoolId) => {
+    try {
+      const response = await fetch(
+        `${BASE_URL}?api_key=${API_KEY}&id=${schoolId}&fields=id,latest.programs.cip_4_digit.title&per_page=100`
+      );
+      const data = await response.json();
+      const majorsSet = new Set(
+        data.results[0]['latest.programs.cip_4_digit'].map((program) => program.title)
+      );
+      setMajors(Array.from(majorsSet));
+    } catch (error) {
+      console.error('Error fetching majors:', error);
+    }
+  }, []);
+
+  // Fetch schools when search term changes
+  useEffect(() => {
+    if (schoolSearchTerm && schoolSearchTerm !== school) {
+      const delayDebounceFn = setTimeout(() => {
+        fetchSchools(schoolSearchTerm);
+      }, 300);
+      return () => clearTimeout(delayDebounceFn);
+    } else {
+      setSchools([]);
+    }
+  }, [schoolSearchTerm, fetchSchools, school]);
+
+  // Fetch majors when school is selected
+  useEffect(() => {
+    if (school) {
+      // Assume you have a way to get the school ID from the name or store it during selection
+      // fetchMajors(schoolId);
+    } else {
+      setMajors([]);
+    }
+  }, [school, fetchMajors]);
+
+  const handleSchoolSelect = (schoolId, schoolName) => {
+    setSchool(schoolName);
+    setSchoolSearchTerm(schoolName);
+    fetchMajors(schoolId);
+    setSchools([]); // Clear schools array to hide dropdown
+  };
+
+  const handleMajorSelect = (selectedMajor) => {
+    setMajor(selectedMajor);
+    setMajorSearchTerm(selectedMajor);
+    setMajors([]); // Clear majors array to hide dropdown
+  };
 
   return (
     <div className="space-y-6">
@@ -58,43 +109,74 @@ function Step2Education({
             <Label htmlFor="school" className="block text-sm font-medium text-gray-700">
               School
             </Label>
-            <Select onValueChange={setSchool} value={school}>
-              <SelectTrigger className="w-full mt-1 border-green-200 focus:ring-green-500 focus:border-green-500">
-                <SelectValue placeholder="Select your school" />
-              </SelectTrigger>
-              <SelectContent>
-                {schools.map((s, index) => (
-                  <SelectItem key={index} value={s} className="hover:bg-green-50">
-                    {s}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="relative mt-1">
+              <Input
+                type="text"
+                id="school"
+                placeholder="Start typing to search for your school..."
+                value={schoolSearchTerm}
+                onChange={(e) => {
+                  setSchoolSearchTerm(e.target.value);
+                  setSchool('');
+                }}
+                className="w-full border-green-200 focus:ring-green-500 focus:border-green-500"
+              />
+              {schools.length > 0 && schoolSearchTerm && schoolSearchTerm !== school && (
+                <ul className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                  {schools.map((schoolItem) => (
+                    <li
+                      key={schoolItem.id}
+                      className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-green-50"
+                      onClick={() => handleSchoolSelect(schoolItem.id, schoolItem.name)}
+                    >
+                      {schoolItem.name}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
+
           {/* Major Selection */}
-          <div>
-            <Label htmlFor="major" className="block text-sm font-medium text-gray-700">
-              Major
-            </Label>
-            <Select onValueChange={setMajor} value={major}>
-              <SelectTrigger className="w-full mt-1 border-green-200 focus:ring-green-500 focus:border-green-500">
-                <SelectValue placeholder="Select your major" />
-              </SelectTrigger>
-              <SelectContent>
-                {majors.map((m, index) => (
-                  <SelectItem key={index} value={m} className="hover:bg-green-50">
-                    {m}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          {school && (
+            <div>
+              <Label htmlFor="major" className="block text-sm font-medium text-gray-700">
+                Major
+              </Label>
+              <div className="relative mt-1">
+                <Input
+                  type="text"
+                  id="major"
+                  placeholder="Start typing to search for your major..."
+                  value={majorSearchTerm}
+                  onChange={(e) => {
+                    setMajorSearchTerm(e.target.value);
+                    setMajor('');
+                  }}
+                  className="w-full border-green-200 focus:ring-green-500 focus:border-green-500"
+                />
+                {majors.length > 0 && majorSearchTerm && majorSearchTerm !== major && (
+                  <ul className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                    {majors
+                      .filter((m) => m.toLowerCase().includes(majorSearchTerm.toLowerCase()))
+                      .map((m, index) => (
+                        <li
+                          key={index}
+                          className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-green-50"
+                          onClick={() => handleMajorSelect(m)}
+                        >
+                          {m}
+                        </li>
+                      ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Graduation Date Picker */}
           <div>
-            <Label
-              htmlFor="graduationDate"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <Label htmlFor="graduationDate" className="block text-sm font-medium text-gray-700">
               Expected Graduation Date
             </Label>
             <Popover>
@@ -106,11 +188,7 @@ function Step2Education({
                   }`}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {graduationDate ? (
-                    format(graduationDate, 'PPP')
-                  ) : (
-                    <span>Pick a date</span>
-                  )}
+                  {graduationDate ? format(graduationDate, 'PPP') : <span>Pick a date</span>}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0">
@@ -120,15 +198,11 @@ function Step2Education({
                   onSelect={setGraduationDate}
                   initialFocus
                   className="rounded-md border-green-200"
-                  classNames={{
-                    day_selected:
-                      'bg-green-600 text-white hover:bg-green-600 hover:text-white focus:bg-green-600 focus:text-white',
-                    day_today: 'bg-green-100 text-green-900',
-                  }}
                 />
               </PopoverContent>
             </Popover>
           </div>
+
           {/* GPA Input */}
           <div>
             <Label htmlFor="gpa" className="block text-sm font-medium text-gray-700">
