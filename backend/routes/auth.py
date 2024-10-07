@@ -1,15 +1,15 @@
-from flask import Blueprint, request, jsonify, current_app
-from models.user import UserModel
 import random
 import string
 import datetime
+
+from flask import Blueprint, request, jsonify, current_app
+from flask_bcrypt import generate_password_hash, check_password_hash
 import boto3
 from botocore.exceptions import ClientError
-from flask_bcrypt import generate_password_hash, check_password_hash
 import requests
 from pymongo.errors import PyMongoError
 
-# from flask_jwt_extended import create_access_token
+from models.user import UserModel
 
 auth_bp = Blueprint("auth_bp", __name__)
 
@@ -41,12 +41,9 @@ def signup():
         minutes=10
     )
 
-    try:
-        # Send verification code via Amazon SES
-        if not send_verification_email(email, verification_code):
-            return jsonify({"message": "Failed to send verification email"}), 500
-    except Exception as e:
-        return jsonify({"message": f"An error occurred: {str(e)}"}), 500
+    # Send verification code via Amazon SES
+    if not send_verification_email(email, verification_code):
+        return jsonify({"message": "Failed to send verification email"}), 500
 
     # Create user in Supabase using Admin API
     try:
@@ -69,7 +66,10 @@ def signup():
             },
         }
         response = requests.post(
-            f"{supabase_url}/auth/v1/admin/users", headers=headers, json=payload
+            f"{supabase_url}/auth/v1/admin/users",
+            headers=headers,
+            json=payload,
+            timeout=10,
         )
         if response.status_code != 200:
             return (
@@ -86,7 +86,9 @@ def signup():
         supabase_user_id = supabase_user["id"]
     except Exception as e:
         return (
-            jsonify({"message": "Error creating user in Supabase", "details": str(e)}),
+            jsonify(
+                {"message": "Error creating user in Supabase", "details": str(e)}
+            ),
             500,
         )
 
@@ -113,7 +115,9 @@ def send_verification_email(email, code):
     AWS_REGION = current_app.config["AWS_REGION_NAME"]
     SUBJECT = "Your Verification Code"
     BODY_TEXT = f"Your verification code is: {code}"
-    BODY_HTML = f"<html><body><p>Your verification code is: <strong>{code}</strong></p></body></html>"
+    BODY_HTML = (
+        f"<html><body><p>Your verification code is: <strong>{code}</strong></p></body></html>"
+    )
     CHARSET = "UTF-8"
 
     client = boto3.client(
@@ -124,7 +128,7 @@ def send_verification_email(email, code):
     )
 
     try:
-        response = client.send_email(
+        _response = client.send_email(
             Destination={"ToAddresses": [RECIPIENT]},
             Message={
                 "Body": {
@@ -147,10 +151,6 @@ def verify_email():
     email = data.get("email")
     code = data.get("code")
 
-    # # Log the incoming request data
-    # print("Verification Request - Email:", email)
-    # print("Verification Request - Code:", code)
-
     if not all([email, code]):
         return jsonify({"message": "Email and verification code are required"}), 400
 
@@ -159,7 +159,6 @@ def verify_email():
     try:
         # Find the user in MongoDB
         user = user_collection.find_one({"email": email})
-        # print("User found in DB:", user)
     except PyMongoError as e:
         print("Error querying MongoDB:", str(e))
         return jsonify({"message": "Database error", "details": str(e)}), 500
@@ -199,9 +198,8 @@ def verify_email():
             f"{supabase_url}/auth/v1/admin/users/{supabase_user_id}",
             headers=headers,
             json=payload,
+            timeout=10,
         )
-
-        # print("Supabase update response:", response.status_code, response.text)
 
         if response.status_code != 200:
             return (
@@ -217,20 +215,24 @@ def verify_email():
     except Exception as e:
         print("Error updating Supabase:", str(e))
         return (
-            jsonify({"message": "Error updating user in Supabase", "details": str(e)}),
+            jsonify(
+                {"message": "Error updating user in Supabase", "details": str(e)}
+            ),
             500,
         )
 
     # Update user in MongoDB
     try:
-        result = user_collection.update_one(
+        _result = user_collection.update_one(
             {"email": email},
             {
                 "$set": {"verified": True},
-                "$unset": {"verification_code": "", "verification_code_expiry": ""},
+                "$unset": {
+                    "verification_code": "",
+                    "verification_code_expiry": "",
+                },
             },
         )
-        # print("MongoDB update result:", result.modified_count)
     except PyMongoError as e:
         print("Error updating MongoDB:", str(e))
         return jsonify({"message": "Database error", "details": str(e)}), 500
