@@ -432,13 +432,13 @@ function StudentProfile() {
                           {awards.map((award, index) => (
                             <Badge key={index} variant="secondary" className="text-sm py-1 px-2 bg-green-100 text-green-800">
                               {award}
-                              <Button
-                                type="button"
-                                onClick={() => handleListItemRemove(index, setAwards)}
-                                className="ml-1 text-green-600 hover:text-green-800"
-                              >
-                                <X className="h-3 w-3" />
-                              </Button>
+                            <Button
+                              type="button"
+                              onClick={() => handleListItemRemove(index, setAwards)}
+                              className="ml-1 text-green-600 hover:text-green-800 bg-transparent hover:bg-red-200"
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
                             </Badge>
                           ))}
                         </div>
@@ -482,7 +482,7 @@ function StudentProfile() {
                               <Button
                                 type="button"
                                 onClick={() => handleListItemRemove(index, setClubs)}
-                                className="ml-1 text-green-600 hover:text-green-800"
+                                className="ml-1 text-green-600 hover:text-green-800 bg-transparent hover:bg-red-200"
                               >
                                 <X className="h-3 w-3" />
                               </Button>
@@ -529,7 +529,7 @@ function StudentProfile() {
                               <Button
                                 type="button"
                                 onClick={() => handleListItemRemove(index, setCertifications)}
-                                className="ml-1 text-green-600 hover:text-green-800"
+                                className="ml-1 text-green-600 hover:text-green-800 bg-transparent hover:bg-red-200"
                               >
                                 <X className="h-3 w-3" />
                               </Button>
