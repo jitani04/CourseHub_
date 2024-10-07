@@ -1,7 +1,7 @@
-import React from 'react';
+import React from "react";
 
 function Dashboard() {
-  const user = JSON.parse(localStorage.getItem('user'));
+  const user = JSON.parse(localStorage.getItem("user"));
   return (
     <div>
       <h2>Welcome, {user.username}!</h2>

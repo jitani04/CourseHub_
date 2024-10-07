@@ -1,16 +1,16 @@
-import axios from 'axios';
+import axios from "axios";
 
-axios.defaults.baseURL = 'http://127.0.0.1:5000'; 
+axios.defaults.baseURL = "http://127.0.0.1:5000";
 
 axios.interceptors.request.use(
-  config => {
-    const token = localStorage.getItem('jwt_token');
+  (config) => {
+    const token = localStorage.getItem("jwt_token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  error => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 export default axios;
