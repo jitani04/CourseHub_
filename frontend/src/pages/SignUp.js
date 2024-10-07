@@ -1,30 +1,40 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
-import { signup, verifyEmailCode } from '../services/authService';
-import Button from '../components/ui/Button';
-import Input from '../components/ui/Input';
-import { Label } from '../components/ui/Label';
-import CustomLoader from '../components/ui/CustomLoader';
-import { BookOpen, User, Mail, Lock, Eye, EyeOff, ArrowRight, Check } from 'lucide-react';
+import React, { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
+import { signup, verifyEmailCode } from "../services/authService";
+import Button from "../components/ui/Button";
+import Input from "../components/ui/Input";
+import Label from "../components/ui/Label";
+import CustomLoader from "../components/ui/CustomLoader";
+import {
+  BookOpen,
+  User,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  ArrowRight,
+  Check,
+} from "lucide-react";
 
 function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [step, setStep] = useState(1);
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [verificationCode, setVerificationCode] = useState(['', '', '', '', '', '']);
 
+  // State variables for form inputs
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [verificationCode, setVerificationCode] = useState("");
   const verificationInputRefs = useRef([]);
 
   // Error handling
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    setError('');
+    setError("");
   }, [step]);
 
   useEffect(() => {
@@ -45,8 +55,8 @@ function SignUp() {
 
   const handleVerificationCodePaste = (e) => {
     e.preventDefault();
-    const pastedData = e.clipboardData.getData('text');
-    const pastedCode = pastedData.slice(0, 6).split('');
+    const pastedData = e.clipboardData.getData("text");
+    const pastedCode = pastedData.slice(0, 6).split("");
     const newCode = [...verificationCode];
     pastedCode.forEach((digit, index) => {
       if (index < 6) newCode[index] = digit;
@@ -60,11 +70,11 @@ function SignUp() {
     e.preventDefault();
     setIsLoading(true);
 
-    setError('');
+    setError("");
 
     // Validate password
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
       setIsLoading(false);
       return;
     }
@@ -79,9 +89,9 @@ function SignUp() {
     try {
       // Call the signup API
       await signup(userData);
-      setStep(2); 
+      setStep(2);
     } catch (err) {
-      setError(err.message || 'Signup failed');
+      setError(err.message || "Signup failed");
     } finally {
       setIsLoading(false);
     }
@@ -93,12 +103,12 @@ function SignUp() {
 
     try {
       // Call the verify email API
-      await verifyEmailCode(email, verificationCode.join(''));
+      await verifyEmailCode(email, verificationCode.join(""));
       setStep(3);
     } catch (err) {
-      setError(err.message || 'Verification failed');
+      setError(err.message || "Verification failed");
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   };
 
@@ -107,9 +117,11 @@ function SignUp() {
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <BookOpen className="mx-auto h-12 w-12 text-green-600" />
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Create your account</h2>
+          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+            Create your account
+          </h2>
           <p className="mt-2 text-sm text-gray-600">
-            Or{' '}
+            Or{" "}
             <Link
               to="/signin"
               className="font-medium text-green-600 hover:text-green-500 transition-colors duration-200"
@@ -124,7 +136,10 @@ function SignUp() {
             <div className="rounded-2xl bg-white shadow-xl p-8 space-y-6">
               {error && <p className="text-red-500 text-sm">{error}</p>}
               <div className="space-y-1">
-                <Label htmlFor="username" className="block text-sm font-medium text-gray-700">
+                <Label
+                  htmlFor="username"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Username
                 </Label>
                 <div className="mt-1 relative rounded-md shadow-sm">
@@ -136,7 +151,7 @@ function SignUp() {
                     name="username"
                     type="text"
                     required
-                    className="block w-full pl-10 sm:text-sm border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                    className="block w-full pl-10 sm:text-sm border-green-200 rounded-md focus:ring-green-500 focus:border-green-500"
                     placeholder="Choose a username"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
@@ -144,7 +159,10 @@ function SignUp() {
                 </div>
               </div>
               <div className="space-y-1">
-                <Label htmlFor="email-address" className="block text-sm font-medium text-gray-700">
+                <Label
+                  htmlFor="email-address"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Email address
                 </Label>
                 <div className="mt-1 relative rounded-md shadow-sm">
@@ -157,7 +175,7 @@ function SignUp() {
                     type="email"
                     autoComplete="email"
                     required
-                    className="block w-full pl-10 sm:text-sm border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                    className="block w-full pl-10 sm:text-sm border-green-200 rounded-md focus:ring-green-500 focus:border-green-500"
                     placeholder="you@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -165,7 +183,10 @@ function SignUp() {
                 </div>
               </div>
               <div className="space-y-1">
-                <Label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                <Label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Password
                 </Label>
                 <div className="mt-1 relative rounded-md shadow-sm">
@@ -175,9 +196,9 @@ function SignUp() {
                   <Input
                     id="password"
                     name="password"
-                    type={showPassword ? 'text' : 'password'}
+                    type={showPassword ? "text" : "password"}
                     required
-                    className="block w-full pl-10 pr-10 sm:text-sm border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                    className="block w-full pl-10 pr-10 sm:text-sm border-green-200 rounded-md focus:ring-green-500 focus:border-green-500"
                     placeholder="Create a password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -188,13 +209,20 @@ function SignUp() {
                       onClick={() => setShowPassword(!showPassword)}
                       className="text-gray-400 hover:text-gray-500 focus:outline-none focus:text-gray-500 transition ease-in-out duration-150"
                     >
-                      {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                      {showPassword ? (
+                        <EyeOff className="h-5 w-5" />
+                      ) : (
+                        <Eye className="h-5 w-5" />
+                      )}
                     </button>
                   </div>
                 </div>
               </div>
               <div className="space-y-1">
-                <Label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700">
+                <Label
+                  htmlFor="confirm-password"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Confirm Password
                 </Label>
                 <div className="mt-1 relative rounded-md shadow-sm">
@@ -204,9 +232,9 @@ function SignUp() {
                   <Input
                     id="confirm-password"
                     name="confirm-password"
-                    type={showConfirmPassword ? 'text' : 'password'}
+                    type={showConfirmPassword ? "text" : "password"}
                     required
-                    className="block w-full pl-10 pr-10 sm:text-sm border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                    className="block w-full pl-10 pr-10 sm:text-sm border-green-200 rounded-md focus:ring-green-500 focus:border-green-500"
                     placeholder="Confirm your password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
@@ -214,10 +242,16 @@ function SignUp() {
                   <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
                     <button
                       type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
                       className="text-gray-400 hover:text-gray-500 focus:outline-none focus:text-gray-500 transition ease-in-out duration-150"
                     >
-                      {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                      {showConfirmPassword ? (
+                        <EyeOff className="h-5 w-5" />
+                      ) : (
+                        <Eye className="h-5 w-5" />
+                      )}
                     </button>
                   </div>
                 </div>
@@ -231,7 +265,7 @@ function SignUp() {
               >
                 {isLoading ? (
                   <>
-                    <CustomLoader /> {/* Use shared CustomLoader */}
+                    <CustomLoader />
                     <span className="ml-2">Creating account...</span>
                   </>
                 ) : (
@@ -244,17 +278,24 @@ function SignUp() {
             </div>
           </form>
         )}
-       {step === 2 && (
+        {step === 2 && (
           <form className="mt-8 space-y-6" onSubmit={handleVerification}>
             <div className="rounded-2xl bg-white shadow-xl p-8 space-y-6">
               <p className="text-center text-sm text-gray-600 mb-4">
-                We&apos;ve sent a verification code to {email}. Please enter it below.
+                We&apos;ve sent a verification code to {email}. Please enter it
+                below.
               </p>
               <div className="space-y-1">
-                <Label htmlFor="verification-code" className="block text-sm font-medium text-gray-700">
+                <Label
+                  htmlFor="verification-code"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Verification Code
                 </Label>
-                <div className="flex justify-between mt-1" onPaste={handleVerificationCodePaste}>
+                <div
+                  className="flex justify-between mt-1"
+                  onPaste={handleVerificationCodePaste}
+                >
                   {verificationCode.map((digit, index) => (
                     <Input
                       key={index}
@@ -265,7 +306,9 @@ function SignUp() {
                       inputMode="numeric"
                       maxLength={1}
                       value={digit}
-                      onChange={(e) => handleVerificationCodeChange(index, e.target.value)}
+                      onChange={(e) =>
+                        handleVerificationCodeChange(index, e.target.value)
+                      }
                       className="w-12 h-12 text-center text-2xl border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
                     />
                   ))}
@@ -297,12 +340,20 @@ function SignUp() {
             <div className="rounded-2xl bg-green-50 p-8 shadow-xl">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
-                  <Check className="h-8 w-8 text-green-400" aria-hidden="true" />
+                  <Check
+                    className="h-8 w-8 text-green-400"
+                    aria-hidden="true"
+                  />
                 </div>
                 <div className="ml-3">
-                  <h3 className="text-xl font-medium text-green-800">Account created successfully</h3>
+                  <h3 className="text-xl font-medium text-green-800">
+                    Account created successfully
+                  </h3>
                   <div className="mt-2 text-sm text-green-700">
-                    <p>Your account has been created and email verified. You can now sign in to CourseHub.</p>
+                    <p>
+                      Your account has been created and email verified. You can
+                      now sign in to CourseHub.
+                    </p>
                   </div>
                   <div className="mt-4">
                     <Link
@@ -320,7 +371,7 @@ function SignUp() {
         )}
       </div>
     </div>
-  )
+  );
 }
 
 export default SignUp;
