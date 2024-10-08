@@ -6,40 +6,59 @@ import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 
 export default function LandingPage() {
-  const [isScrolled, setIsScrolled] = useState(false)
+  const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 10) {
-        setIsScrolled(true)
+        setIsScrolled(true);
       } else {
-        setIsScrolled(false)
+        setIsScrolled(false);
       }
-    }
+    };
 
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const smoothScrollTo = (sectionId) => {
+    document.getElementById(sectionId).scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
       <header className={`px-4 lg:px-6 h-14 flex items-center fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled ? 'bg-white dark:bg-gray-900 shadow-md opacity-95' : 'bg-transparent opacity-100'
       }`}>
-        <Link className="flex items-center justify-center" href="#">
-          <BookOpen className="h-6 w-6 text-green-600" />
-          <span className="ml-2 text-2xl font-bold text-green-600">CourseHub</span>
-        </Link>
+        <button
+            className="flex items-center justify-center"
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          >
+            <BookOpen className="h-6 w-6 text-green-600" />
+            <span className="ml-2 text-2xl font-bold text-green-600">CourseHub</span>
+          </button>
         <nav className="ml-auto flex gap-4 sm:gap-6">
-          <Link className="text-sm font-medium hover:text-green-600 hover:underline underline-offset-4" href="#">
+          <button
+            className="text-sm font-medium hover:text-green-600 hover:underline underline-offset-4"
+            onClick={() => smoothScrollTo('features-section')}
+          >
             Features
-          </Link>
-          <Link className="text-sm font-medium hover:text-green-600 hover:underline underline-offset-4" href="#">
+          </button>
+          <button
+            className="text-sm font-medium hover:text-green-600 hover:underline underline-offset-4"
+            onClick={() => smoothScrollTo('courses-section')}
+          >
             Courses
-          </Link>
-          <Link className="text-sm font-medium hover:text-green-600 hover:underline underline-offset-4" href="#">
+          </button>
+          <button
+            className="text-sm font-medium hover:text-green-600 hover:underline underline-offset-4"
+            onClick={() => smoothScrollTo('join-section')}
+          >
             About
-          </Link>
+          </button>
           <Link className="text-sm font-medium hover:text-green-600 hover:underline underline-offset-4" to="/signin">
             Sign In
           </Link>
@@ -58,13 +77,19 @@ export default function LandingPage() {
                 </p>
               </div>
               <div className="space-x-4">
-                <Button className="bg-green-600 hover:bg-green-700 text-white">Get Started</Button>
-                <Button variant="outline" className="text-green-600 border-green-600 hover:bg-green-50">Learn More</Button>
+                <Link to="/signup">
+                  <Button className="bg-green-600 hover:bg-green-700 text-white">Get Started</Button>
+                </Link>
+                <button
+                  onClick={() => smoothScrollTo('features-section')}
+                >
+                  <Button variant="outline" className="text-green-600 border-green-600 hover:bg-green-50">Learn More</Button>
+                </button>
               </div>
             </div>
           </div>
         </section>
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-green-50 dark:bg-green-900">
+        <section id="features-section" className="w-full py-12 md:py-24 lg:py-32 bg-green-50 dark:bg-green-900">
           <div className="container mx-auto px-4 md:px-6">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12 text-green-800 dark:text-green-100">Key Features</h2>
             <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-3">
@@ -92,7 +117,7 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-        <section className="w-full py-12 md:py-24 lg:py-32">
+        <section id="courses-section" className="w-full py-12 md:py-24 lg:py-32">
           <div className="container mx-auto px-4 md:px-6">
             <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12 text-green-800 dark:text-green-100">Popular Courses</h2>
             <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
@@ -103,13 +128,15 @@ export default function LandingPage() {
                   <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
                     Join the discussion and collaborate with your classmates.
                   </p>
-                  <Button variant="outline" className="text-green-600 border-green-600 hover:bg-green-50">Join Channel</Button>
+                  <Link to="/signin">
+                    <Button variant="outline" className="text-green-600 border-green-600 hover:bg-green-50">Join Channel</Button>
+                  </Link>
                 </div>
               ))}
             </div>
           </div>
         </section>
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-green-50 dark:bg-green-900">
+        <section id="join-section" className="w-full py-12 md:py-24 lg:py-32 bg-green-50 dark:bg-green-900">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center space-y-4 text-center">
               <div className="space-y-2">
@@ -121,7 +148,9 @@ export default function LandingPage() {
               <div className="w-full max-w-sm space-y-2">
                 <form className="flex space-x-2">
                   <Input className="max-w-lg flex-1" placeholder="Enter your email" type="email" />
-                  <Button type="submit" className="bg-green-600 hover:bg-green-700 text-white">Sign Up</Button>
+                  <Link to="/signup">
+                    <Button type="submit" className="bg-green-600 hover:bg-green-700 text-white">Sign Up</Button>
+                  </Link>
                 </form>
               </div>
             </div>
@@ -132,5 +161,5 @@ export default function LandingPage() {
         <p className="text-xs text-gray-500 dark:text-gray-400 text-center">© 2024 CourseHub. All rights reserved.</p>
       </footer>
     </div>
-  )
+  );
 }
