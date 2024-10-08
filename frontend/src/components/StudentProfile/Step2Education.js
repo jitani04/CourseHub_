@@ -10,7 +10,7 @@ import {
 } from "../ui/Popover";
 import Calendar from "../ui/Calendar";
 import { format } from 'date-fns';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, Loader2 } from 'lucide-react';
 
 const API_KEY = process.env.REACT_APP_COLLEGE_SCORECARD_API_KEY;
 const BASE_URL = 'https://api.data.gov/ed/collegescorecard/v1/schools';
@@ -29,8 +29,10 @@ function Step2Education({
   const [majors, setMajors] = useState([]);
   const [schoolSearchTerm, setSchoolSearchTerm] = useState('');
   const [majorSearchTerm, setMajorSearchTerm] = useState('');
+  const [isLoadingSchools, setIsLoadingSchools] = useState(false)
 
   const fetchSchools = useCallback(async (search = '') => {
+    setIsLoadingSchools(true)
     try {
       const response = await fetch(
         `${BASE_URL}?api_key=${API_KEY}&school.name=${search}&fields=id,school.name&per_page=20`
@@ -43,9 +45,11 @@ function Step2Education({
         }))
       );
     } catch (error) {
-      console.error('Error fetching schools:', error);
+        console.error('Error fetching schools:', error);
+}     finally {
+        setIsLoadingSchools(false)
     }
-  }, []);
+  }, [])
 
   const fetchMajors = useCallback(async (schoolId) => {
     try {
@@ -77,8 +81,6 @@ function Step2Education({
   // Fetch majors when school is selected
   useEffect(() => {
     if (school) {
-      // Assume you have a way to get the school ID from the name or store it during selection
-      // fetchMajors(schoolId);
     } else {
       setMajors([]);
     }
@@ -88,13 +90,13 @@ function Step2Education({
     setSchool(schoolName);
     setSchoolSearchTerm(schoolName);
     fetchMajors(schoolId);
-    setSchools([]); // Clear schools array to hide dropdown
+    setSchools([]);
   };
 
   const handleMajorSelect = (selectedMajor) => {
     setMajor(selectedMajor);
     setMajorSearchTerm(selectedMajor);
-    setMajors([]); // Clear majors array to hide dropdown
+    setMajors([]); 
   };
 
   return (
@@ -121,6 +123,9 @@ function Step2Education({
                 }}
                 className="w-full border-green-200 focus:ring-green-500 focus:border-green-500"
               />
+              {isLoadingSchools && (
+              <Loader2 className="absolute right-3 top-3 h-4 w-4 animate-spin text-muted-foreground" />
+            )}
               {schools.length > 0 && schoolSearchTerm && schoolSearchTerm !== school && (
                 <ul className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
                   {schools.map((schoolItem) => (
