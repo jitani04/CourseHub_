@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { signup, verifyEmailCode } from "../services/authService";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
-import { Label } from "../components/ui/Label";
+import Label from "../components/ui/Label";
 import CustomLoader from "../components/ui/CustomLoader";
 import {
   BookOpen,
