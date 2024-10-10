@@ -1,5 +1,5 @@
-import * as AvatarCollection from '@dicebear/collection';
-import { createAvatar } from '@dicebear/core';
+import * as AvatarCollection from "@dicebear/collection";
+import { createAvatar } from "@dicebear/core";
 
 /**
  * Generates an avatar SVG string.
@@ -13,7 +13,7 @@ export const generateAvatarSvg = (styleName, seed, options = {}) => {
   const style = AvatarCollection[styleName];
   if (!style) {
     console.error(`Avatar style "${styleName}" not found.`);
-    return '';
+    return "";
   }
   const avatar = createAvatar(style, { seed, ...options });
   return avatar.toString();

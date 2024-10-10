@@ -1,35 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import Step1PersonalInfo from './Step1PersonalInfo';
-import Step2Education from './Step2Education';
-import Step3Interests from './Step3Interests';
-import Step4Achievements from './Step4Achievements';
-import { steps } from '../../constants/steps';
-import { Card, CardContent } from '../ui/Card';
-import { BookOpen, ChevronLeft, ChevronRight } from 'lucide-react';
-import Button from '../ui/Button';
+import React, { useState } from "react";
+import Step1PersonalInfo from "./Step1PersonalInfo";
+import Step2Education from "./Step2Education";
+import Step3Interests from "./Step3Interests";
+import Step4Achievements from "./Step4Achievements";
+import { steps } from "../../constants/steps";
+import { Card, CardContent } from "../ui/Card";
+import { BookOpen, ChevronLeft, ChevronRight } from "lucide-react";
+import Button from "../ui/Button";
 
 function StudentProfile() {
   const [step, setStep] = useState(1);
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [bio, setBio] = useState('');
-  const [school, setSchool] = useState('');
-  const [major, setMajor] = useState('');
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [bio, setBio] = useState("");
+  const [school, setSchool] = useState("");
+  const [major, setMajor] = useState("");
   const [graduationDate, setGraduationDate] = useState(null);
-  const [gpa, setGpa] = useState('');
+  const [gpa, setGpa] = useState("");
   const [selectedTopics, setSelectedTopics] = useState([]);
   const [awards, setAwards] = useState([]);
   const [clubs, setClubs] = useState([]);
   const [certifications, setCertifications] = useState([]);
-  const [avatar, setAvatar] = useState('');
-  const [schools, setSchools] = useState([]);
-  const [majors, setMajors] = useState([]);
-
-  // Fetch schools and majors
-  useEffect(() => {
-    // fetchSchools().then(setSchools);
-    // fetchMajors().then(setMajors);
-  }, []);
+  const [avatar, setAvatar] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -55,12 +47,12 @@ function StudentProfile() {
                 <div
                   key={s.number}
                   className={`flex flex-col items-center ${
-                    step === s.number ? 'text-green-600' : 'text-gray-400'
+                    step === s.number ? "text-green-600" : "text-gray-400"
                   }`}
                 >
                   <div
                     className={`rounded-full p-2 ${
-                      step === s.number ? 'bg-green-100' : 'bg-gray-100'
+                      step === s.number ? "bg-green-100" : "bg-gray-100"
                     }`}
                   >
                     <s.icon className="h-6 w-6" />
@@ -92,8 +84,6 @@ function StudentProfile() {
                   setGraduationDate={setGraduationDate}
                   gpa={gpa}
                   setGpa={setGpa}
-                  schools={schools}
-                  majors={majors}
                 />
               )}
               {step === 3 && (

@@ -1,8 +1,8 @@
-import React from 'react';
+import React from "react";
 import Button from "../ui/Button";
 import Input from "../ui/Input";
 import Label from "../ui/Label";
-import { X } from 'lucide-react';
+import { X } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/Card";
 
 function Step4Achievements({
@@ -32,7 +32,10 @@ function Step4Achievements({
         <CardContent className="space-y-6">
           {/* Awards or Honors */}
           <div>
-            <Label htmlFor="awards" className="block text-sm font-medium text-gray-700">
+            <Label
+              htmlFor="awards"
+              className="block text-sm font-medium text-gray-700"
+            >
               Awards or Honors
             </Label>
             <div className="flex mt-1">
@@ -41,10 +44,10 @@ function Step4Achievements({
                 id="awards"
                 placeholder="Add an award or honor"
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
+                  if (e.key === "Enter") {
                     e.preventDefault();
                     handleListItemAdd(e.currentTarget.value, setAwards);
-                    e.currentTarget.value = '';
+                    e.currentTarget.value = "";
                   }
                 }}
                 className="flex-grow border-green-200 focus:ring-green-500 focus:border-green-500"
@@ -52,10 +55,10 @@ function Step4Achievements({
               <Button
                 type="button"
                 onClick={() => {
-                  const input = document.getElementById('awards');
+                  const input = document.getElementById("awards");
                   if (input instanceof HTMLInputElement) {
                     handleListItemAdd(input.value, setAwards);
-                    input.value = '';
+                    input.value = "";
                   }
                 }}
                 className="ml-2 bg-green-600 hover:bg-green-700 text-white"
@@ -81,7 +84,10 @@ function Step4Achievements({
 
           {/* Clubs & Organizations */}
           <div>
-            <Label htmlFor="clubs" className="block text-sm font-medium text-gray-700">
+            <Label
+              htmlFor="clubs"
+              className="block text-sm font-medium text-gray-700"
+            >
               Clubs & Organizations
             </Label>
             <div className="flex mt-1">
@@ -90,10 +96,10 @@ function Step4Achievements({
                 id="clubs"
                 placeholder="Add a club or organization"
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
+                  if (e.key === "Enter") {
                     e.preventDefault();
                     handleListItemAdd(e.currentTarget.value, setClubs);
-                    e.currentTarget.value = '';
+                    e.currentTarget.value = "";
                   }
                 }}
                 className="flex-grow border-green-200 focus:ring-green-500 focus:border-green-500"
@@ -101,10 +107,10 @@ function Step4Achievements({
               <Button
                 type="button"
                 onClick={() => {
-                  const input = document.getElementById('clubs');
+                  const input = document.getElementById("clubs");
                   if (input instanceof HTMLInputElement) {
                     handleListItemAdd(input.value, setClubs);
-                    input.value = '';
+                    input.value = "";
                   }
                 }}
                 className="ml-2 bg-green-600 hover:bg-green-700 text-white"
@@ -142,10 +148,10 @@ function Step4Achievements({
                 id="certifications"
                 placeholder="Add a certification or achievement"
                 onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
+                  if (e.key === "Enter") {
                     e.preventDefault();
                     handleListItemAdd(e.currentTarget.value, setCertifications);
-                    e.currentTarget.value = '';
+                    e.currentTarget.value = "";
                   }
                 }}
                 className="flex-grow border-green-200 focus:ring-green-500 focus:border-green-500"
@@ -153,10 +159,10 @@ function Step4Achievements({
               <Button
                 type="button"
                 onClick={() => {
-                  const input = document.getElementById('certifications');
+                  const input = document.getElementById("certifications");
                   if (input instanceof HTMLInputElement) {
                     handleListItemAdd(input.value, setCertifications);
-                    input.value = '';
+                    input.value = "";
                   }
                 }}
                 className="ml-2 bg-green-600 hover:bg-green-700 text-white"
