@@ -30,14 +30,13 @@ function SignIn() {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true); // Set loading to true when API call starts
+    setIsLoading(true); 
     try {
       const data = await signin(email, password);
 
-      // Make sure 'data' is defined and contains the expected fields
       if (!data || !data.jwt_token) {
         setError("Failed to sign in: Invalid response from server");
-        setIsLoading(false); // Reset loading state on failure
+        setIsLoading(false); 
         return;
       }
 
