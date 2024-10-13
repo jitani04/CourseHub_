@@ -14,4 +14,5 @@ class Config:
     AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY")
     AWS_REGION_NAME = os.getenv("AWS_REGION")
     EMAIL_FROM = os.getenv("EMAIL_FROM")
+    FRONTEND_URL = os.getenv("FRONTEND_URL")
     DEBUG = os.getenv("DEBUG", "False") == "True"

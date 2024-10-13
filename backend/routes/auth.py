@@ -1,3 +1,4 @@
+import logging
 import random
 import string
 import datetime
@@ -7,9 +8,12 @@ from flask_bcrypt import generate_password_hash, check_password_hash
 import boto3
 from botocore.exceptions import ClientError
 import requests
+
 from pymongo.errors import PyMongoError
 
 from models.user import UserModel
+
+from itsdangerous import URLSafeTimedSerializer
 
 auth_bp = Blueprint("auth_bp", __name__)
 
@@ -86,9 +90,7 @@ def signup():
         supabase_user_id = supabase_user["id"]
     except Exception as e:
         return (
-            jsonify(
-                {"message": "Error creating user in Supabase", "details": str(e)}
-            ),
+            jsonify({"message": "Error creating user in Supabase", "details": str(e)}),
             500,
         )
 
@@ -115,9 +117,7 @@ def send_verification_email(email, code):
     AWS_REGION = current_app.config["AWS_REGION_NAME"]
     SUBJECT = "Your Verification Code"
     BODY_TEXT = f"Your verification code is: {code}"
-    BODY_HTML = (
-        f"<html><body><p>Your verification code is: <strong>{code}</strong></p></body></html>"
-    )
+    BODY_HTML = f"<html><body><p>Your verification code is: <strong>{code}</strong></p></body></html>"
     CHARSET = "UTF-8"
 
     client = boto3.client(
@@ -215,9 +215,7 @@ def verify_email():
     except Exception as e:
         print("Error updating Supabase:", str(e))
         return (
-            jsonify(
-                {"message": "Error updating user in Supabase", "details": str(e)}
-            ),
+            jsonify({"message": "Error updating user in Supabase", "details": str(e)}),
             500,
         )
 
@@ -289,3 +287,149 @@ def signin():
     except Exception as e:
         print(f"Error in sign-in process: {e}")
         return jsonify({"message": str(e)}), 500
+
+
+def generate_reset_token(email):
+    serializer = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
+    return serializer.dumps(email, salt="password-reset-salt")
+
+
+def verify_reset_token(token, expiration=3600):
+    serializer = URLSafeTimedSerializer(current_app.config["SECRET_KEY"])
+    try:
+        email = serializer.loads(token, salt="password-reset-salt", max_age=expiration)
+        return email
+    except Exception as e:
+        logging.error("Error verifying reset token: %s", str(e))
+        return None
+
+
+@auth_bp.route("/request-reset-password", methods=["POST"])
+def request_reset_password():
+    data = request.get_json()
+    email = data.get("email")
+
+    if not email:
+        return jsonify({"message": "Email is required"}), 400
+
+    # Find user in MongoDB
+    user_model = UserModel(current_app.db, current_app.supabase)
+    user = user_model.find_by_email(email)
+
+    if not user:
+        return jsonify({"message": "User with this email does not exist"}), 404
+
+    # Generate reset token
+    reset_token = generate_reset_token(email)
+
+    # Send the reset email with the token
+    send_reset_email(email, reset_token)
+
+    return jsonify({"message": "Password reset email sent"}), 200
+
+
+def send_reset_email(email, token):
+    SENDER = current_app.config["EMAIL_FROM"]
+    RECIPIENT = email
+    AWS_REGION = current_app.config["AWS_REGION_NAME"]
+    SUBJECT = "Password Reset Request"
+    BODY_HTML = (
+        f"<html><body><p>Click the link to reset your password: "
+        f"<a href='{current_app.config['FRONTEND_URL']}/reset-password/{token}'>"
+        "Reset Password</a></p></body></html>"
+    )
+    CHARSET = "UTF-8"
+
+    client = boto3.client(
+        "ses",
+        aws_access_key_id=current_app.config["AWS_ACCESS_KEY_ID"],
+        aws_secret_access_key=current_app.config["AWS_SECRET_ACCESS_KEY"],
+        region_name=AWS_REGION,
+    )
+
+    try:
+        # Sending the email
+        client.send_email(
+            Destination={"ToAddresses": [RECIPIENT]},
+            Message={
+                "Body": {"Html": {"Charset": CHARSET, "Data": BODY_HTML}},
+                "Subject": {"Charset": CHARSET, "Data": SUBJECT},
+            },
+            Source=SENDER,
+        )
+    except ClientError as e:
+        logging.error("Error sending email: %s", e.response['Error']['Message'])
+
+
+@auth_bp.route("/reset-password/<token>", methods=["POST"])
+def reset_password(token):
+    data = request.get_json()
+    new_password = data.get("password")
+
+    if not new_password:
+        return jsonify({"message": "Password is required"}), 400
+
+    # Verify the token
+    email = verify_reset_token(token)
+
+    if not email:
+        return jsonify({"message": "Invalid or expired token"}), 400
+
+    # Find user in MongoDB
+    user_model = UserModel(current_app.db, current_app.supabase)
+    user = user_model.find_by_email(email)
+
+    if not user:
+        return jsonify({"message": "User not found"}), 404
+
+    # Hash the new password
+    hashed_password = generate_password_hash(new_password).decode("utf-8")
+
+    # Update password in MongoDB
+    user_model.collection.update_one(
+        {"email": email}, {"$set": {"password": hashed_password}}
+    )
+
+    # Update password in Supabase
+    try:
+        supabase_url = current_app.config["SUPABASE_URL"]
+        supabase_key = current_app.config["SUPABASE_KEY"]
+        supabase_user_id = user.get("supabase_id")
+
+        headers = {
+            "apikey": supabase_key,
+            "Authorization": f"Bearer {supabase_key}",
+            "Content-Type": "application/json",
+        }
+
+        payload = {"password": new_password}
+
+        response = requests.put(
+            f"{supabase_url}/auth/v1/admin/users/{supabase_user_id}",
+            headers=headers,
+            json=payload,
+            timeout=10,
+        )
+
+        if response.status_code != 200:
+            logging.error("Error updating password in Supabase: %s", response.text)
+            return (
+                jsonify(
+                    {
+                        "message": "Error updating password in Supabase",
+                        "details": response.text,
+                    }
+                ),
+                400,
+            )
+
+    except requests.exceptions.RequestException as e:
+        logging.error("Error during Supabase request: %s", str(e))
+        return (
+            jsonify(
+                {"message": "Error updating password in Supabase", "details": str(e)}
+            ),
+            500,
+        )
+
+    return jsonify({"message": "Password reset successfully"}), 200
