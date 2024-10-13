@@ -1,24 +1,35 @@
 import React, { useState } from 'react';
+import { requestResetPassword } from '../services/authService';
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import Label from "../components/ui/Label";
 import CustomLoader from "../components/ui/CustomLoader";
 import { BookOpen, Mail, ArrowRight, CheckCircle } from "lucide-react";
-import { useNavigate } from 'react-router-dom'; 
 import { Link } from 'react-router-dom'; 
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const navigate = useNavigate();  
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
     setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    setIsLoading(false);
-    setIsSubmitted(true);
+    try {
+      await requestResetPassword(email);
+      setIsLoading(false);
+      setIsSubmitted(true);
+    } catch (err) {
+      const errorMessage = err.message || 'Something went wrong, please try again.';
+      if (errorMessage.includes('Email not found')) {
+        setError('The email you entered is not registered. Please try again with a registered email.');
+      } else {
+        setError(errorMessage);
+      }
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -55,6 +66,9 @@ export default function ForgotPassword() {
                   />
                 </div>
               </div>
+              {error && (
+                <p className="text-red-500 text-sm mt-2">{error}</p>
+              )}
             </div>
             <div>
               <Button

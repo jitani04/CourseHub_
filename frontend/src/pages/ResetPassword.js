@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
+import { resetPassword } from '../services/authService';
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import Label from "../components/ui/Label";
 import CustomLoader from "../components/ui/CustomLoader";
 import { BookOpen, Lock, Eye, EyeOff, ArrowRight, CheckCircle } from "lucide-react";
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate, useParams } from 'react-router-dom'; 
 
 export default function ResetPassword() {
   const [password, setPassword] = useState('');
@@ -14,12 +15,13 @@ export default function ResetPassword() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState('');
-  const navigate = useNavigate(); 
+  const { token } = useParams(); 
+  const navigate = useNavigate();
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-
 
     if (password !== confirmPassword) {
       setError('Passwords do not match.');
@@ -27,9 +29,14 @@ export default function ResetPassword() {
     }
 
     setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    setIsLoading(false);
-    setIsSubmitted(true);
+    try {
+      await resetPassword(token, password);
+      setIsLoading(false);
+      setIsSubmitted(true);
+    } catch (err) {
+      setError(err.message || 'Something went wrong, please try again.');
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -145,7 +152,7 @@ export default function ResetPassword() {
                 Your password has been successfully reset. You can now use your new password to sign in.
               </p>
               <Button
-                onClick={() => navigate('/sign-in')}
+                onClick={() => navigate('/signin')}
                 className="w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
               >
                 Go to Sign In
