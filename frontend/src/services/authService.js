@@ -34,21 +34,24 @@ export const signin = async (email, password) => {
   }
 };
 
-
 export const requestResetPassword = async (email) => {
   try {
-    const response = await axios.post('/auth/request-reset-password', { email });
+    const response = await axios.post("/auth/request-reset-password", {
+      email,
+    });
     return response.data;
   } catch (error) {
-    throw error.response ? error.response.data : { message: 'Network Error' };
+    throw error.response ? error.response.data : { message: "Network Error" };
   }
 };
 
 export const resetPassword = async (token, password) => {
   try {
-    const response = await axios.post(`/auth/reset-password/${token}`, { password });
+    const response = await axios.post(`/auth/reset-password/${token}`, {
+      password,
+    });
     return response.data;
   } catch (error) {
-    throw error.response ? error.response.data : { message: 'Network Error' };
+    throw error.response ? error.response.data : { message: "Network Error" };
   }
 };

@@ -1,30 +1,33 @@
-import React, { useState } from 'react';
-import { requestResetPassword } from '../services/authService';
+import React, { useState } from "react";
+import { requestResetPassword } from "../services/authService";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import Label from "../components/ui/Label";
 import CustomLoader from "../components/ui/CustomLoader";
 import { BookOpen, Mail, ArrowRight, CheckCircle } from "lucide-react";
-import { Link } from 'react-router-dom'; 
+import { Link } from "react-router-dom";
 
 export default function ForgotPassword() {
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setIsLoading(true);
     try {
       await requestResetPassword(email);
       setIsLoading(false);
       setIsSubmitted(true);
     } catch (err) {
-      const errorMessage = err.message || 'Something went wrong, please try again.';
-      if (errorMessage.includes('Email not found')) {
-        setError('The email you entered is not registered. Please try again with a registered email.');
+      const errorMessage =
+        err.message || "Something went wrong, please try again.";
+      if (errorMessage.includes("Email not found")) {
+        setError(
+          "The email you entered is not registered. Please try again with a registered email.",
+        );
       } else {
         setError(errorMessage);
       }
@@ -37,7 +40,9 @@ export default function ForgotPassword() {
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <BookOpen className="mx-auto h-12 w-12 text-green-600" />
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Forgot your password?</h2>
+          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+            Forgot your password?
+          </h2>
           <p className="mt-2 text-sm text-gray-600">
             No worries, we'll send you reset instructions.
           </p>
@@ -46,7 +51,10 @@ export default function ForgotPassword() {
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
             <div className="rounded-2xl bg-white shadow-xl p-8 space-y-6">
               <div className="space-y-1">
-                <Label htmlFor="email-address" className="block text-sm font-medium text-gray-700">
+                <Label
+                  htmlFor="email-address"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Email address
                 </Label>
                 <div className="mt-1 relative rounded-md shadow-sm">
@@ -66,9 +74,7 @@ export default function ForgotPassword() {
                   />
                 </div>
               </div>
-              {error && (
-                <p className="text-red-500 text-sm mt-2">{error}</p>
-              )}
+              {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
             </div>
             <div>
               <Button
@@ -97,13 +103,18 @@ export default function ForgotPassword() {
                 <CheckCircle className="h-12 w-12" />
               </div>
               <p className="text-center text-gray-700">
-                We've sent a password reset link to <strong>{email}</strong>. Please check your inbox and follow the instructions to reset your password.
+                We've sent a password reset link to <strong>{email}</strong>.
+                Please check your inbox and follow the instructions to reset
+                your password.
               </p>
             </div>
           </div>
         )}
         <div className="text-center">
-          <Link to="/signin" className="font-medium text-green-600 hover:text-green-500 transition-colors duration-200">
+          <Link
+            to="/signin"
+            className="font-medium text-green-600 hover:text-green-500 transition-colors duration-200"
+          >
             Back to Sign In
           </Link>
         </div>

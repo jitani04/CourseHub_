@@ -1,30 +1,36 @@
-import React, { useState } from 'react';
-import { resetPassword } from '../services/authService';
+import React, { useState } from "react";
+import { resetPassword } from "../services/authService";
 import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import Label from "../components/ui/Label";
 import CustomLoader from "../components/ui/CustomLoader";
-import { BookOpen, Lock, Eye, EyeOff, ArrowRight, CheckCircle } from "lucide-react";
-import { useNavigate, useParams } from 'react-router-dom'; 
+import {
+  BookOpen,
+  Lock,
+  Eye,
+  EyeOff,
+  ArrowRight,
+  CheckCircle,
+} from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
 
 export default function ResetPassword() {
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [error, setError] = useState('');
-  const { token } = useParams(); 
+  const [error, setError] = useState("");
+  const { token } = useParams();
   const navigate = useNavigate();
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match.');
+      setError("Passwords do not match.");
       return;
     }
 
@@ -34,7 +40,7 @@ export default function ResetPassword() {
       setIsLoading(false);
       setIsSubmitted(true);
     } catch (err) {
-      setError(err.message || 'Something went wrong, please try again.');
+      setError(err.message || "Something went wrong, please try again.");
       setIsLoading(false);
     }
   };
@@ -44,7 +50,9 @@ export default function ResetPassword() {
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <BookOpen className="mx-auto h-12 w-12 text-green-600" />
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Reset your password</h2>
+          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+            Reset your password
+          </h2>
           <p className="mt-2 text-sm text-gray-600">
             Enter your new password below
           </p>
@@ -53,7 +61,10 @@ export default function ResetPassword() {
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
             <div className="rounded-2xl bg-white shadow-xl p-8 space-y-6">
               <div className="space-y-1">
-                <Label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                <Label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   New Password
                 </Label>
                 <div className="mt-1 relative rounded-md shadow-sm">
@@ -86,7 +97,10 @@ export default function ResetPassword() {
                 </div>
               </div>
               <div className="space-y-1">
-                <Label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700">
+                <Label
+                  htmlFor="confirm-password"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Confirm New Password
                 </Label>
                 <div className="mt-1 relative rounded-md shadow-sm">
@@ -106,7 +120,9 @@ export default function ResetPassword() {
                   <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
                     <button
                       type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
                       className="text-gray-400 hover:text-gray-500 focus:outline-none focus:text-gray-500 transition ease-in-out duration-150"
                     >
                       {showConfirmPassword ? (
@@ -118,9 +134,7 @@ export default function ResetPassword() {
                   </div>
                 </div>
               </div>
-              {error && (
-                <p className="text-red-500 text-sm mt-2">{error}</p>
-              )}
+              {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
             </div>
             <div>
               <Button
@@ -149,10 +163,11 @@ export default function ResetPassword() {
                 <CheckCircle className="h-12 w-12" />
               </div>
               <p className="text-center text-gray-700">
-                Your password has been successfully reset. You can now use your new password to sign in.
+                Your password has been successfully reset. You can now use your
+                new password to sign in.
               </p>
               <Button
-                onClick={() => navigate('/signin')}
+                onClick={() => navigate("/signin")}
                 className="w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
               >
                 Go to Sign In

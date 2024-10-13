@@ -30,13 +30,13 @@ function SignIn() {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true); 
+    setIsLoading(true);
     try {
       const data = await signin(email, password);
 
       if (!data || !data.jwt_token) {
         setError("Failed to sign in: Invalid response from server");
-        setIsLoading(false); 
+        setIsLoading(false);
         return;
       }
 
