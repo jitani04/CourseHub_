@@ -104,7 +104,7 @@ function SignIn() {
                   value={email}
                   onChange={handleChange}
                   required
-                  className="block w-full pl-10 sm:text-sm border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                  className="block w-full pl-10 sm:text-sm border-green-200 rounded-md focus:ring-green-500 focus:border-green-500"
                   placeholder="you@student.school.edu"
                 />
               </div>
@@ -128,7 +128,7 @@ function SignIn() {
                   value={password}
                   onChange={handleChange}
                   required
-                  className="block w-full pl-10 pr-10 sm:text-sm border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"
+                  className="block w-full pl-10 pr-10 sm:text-sm border-green-200 rounded-md focus:ring-green-500 focus:border-green-500"
                   placeholder="Enter your password"
                 />
                 <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
@@ -153,7 +153,7 @@ function SignIn() {
                   id="remember-me"
                   name="remember-me"
                   type="checkbox"
-                  className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                  className="h-4 w-4"
                 />
                 <Label
                   htmlFor="remember-me"
