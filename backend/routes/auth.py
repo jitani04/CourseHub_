@@ -329,7 +329,7 @@ def request_reset_password():
 
 
 def send_reset_email(email, token):
-    SENDER = current_app.config["EMAIL_FROM"]
+    SENDER = f"CourseHub <{current_app.config['EMAIL_FROM']}>"
     RECIPIENT = email
     AWS_REGION = current_app.config["AWS_REGION_NAME"]
     SUBJECT = "Password Reset Request"
