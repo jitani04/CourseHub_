@@ -14,7 +14,7 @@ class UserModel:
     ):
         try:
             user_data = {
-                "_id": supabase_user_id,
+                "supabase_id": supabase_user_id,
                 "email": email,
                 "username": username,
                 "verified": verified,

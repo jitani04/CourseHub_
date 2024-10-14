@@ -82,7 +82,6 @@ def signup():
                 ),
                 400,
             )
-
         supabase_user = response.json()
         supabase_user_id = supabase_user["id"]
     except Exception as e:
@@ -267,17 +266,12 @@ def signin():
     if not user:
         return jsonify({"message": "User not found"}), 404
 
-    # Check hashed password
-    if not check_password_hash(user["password"], password):
-        return jsonify({"message": "Invalid credentials"}), 401
-
     # Authenticate with Supabase
     try:
         response = current_app.supabase.auth.sign_in_with_password(
             {"email": email, "password": password}
         )
 
-        # Check if there was an error in the response
         if response.user is None:
             return jsonify({"message": response.error.message}), 401
 
@@ -290,8 +284,6 @@ def signin():
                     "user_id": str(user["_id"]),
                     "username": user["username"],
                     "email": user["email"],
-                    "first_name": user.get("first_name"),
-                    "last_name": user.get("last_name"),
                 }
             ),
             200,
