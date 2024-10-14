@@ -4,7 +4,7 @@ import string
 import datetime
 
 from flask import Blueprint, request, jsonify, current_app
-from flask_bcrypt import generate_password_hash, check_password_hash
+from flask_bcrypt import generate_password_hash
 import boto3
 from botocore.exceptions import ClientError
 import requests
