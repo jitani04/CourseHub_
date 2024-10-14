@@ -57,7 +57,7 @@ function SignIn() {
       navigate("/dashboard");
     } catch (err) {
       console.error("Error during sign-in:", err);
-      setError(err.response?.data?.message || "Signin failed");
+      setError(err.message || "Signin failed");
     } finally {
       setIsLoading(false);
     }

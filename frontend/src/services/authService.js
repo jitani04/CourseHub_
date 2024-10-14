@@ -12,13 +12,17 @@ export const signup = async (userData) => {
 export const verifyEmailCode = async (email, code) => {
   try {
     const response = await axios.post("/auth/verify-email", {
-      email: email,
-      code: code,
+      email,
+      code,
     });
     return response.data;
   } catch (error) {
-    console.error("Error verifying email:", error);
-    throw error;
+    console.error(
+      "Error verifying email:",
+      error.response?.data || error.message,
+    );
+    const message = error.response?.data?.message || "An error occurred.";
+    throw new Error(message);
   }
 };
 
@@ -30,7 +34,10 @@ export const signin = async (email, password) => {
     });
     return response.data;
   } catch (error) {
-    throw error.response ? error.response.data : { message: "Network Error" };
+    const message = error.response
+      ? error.response.data.message
+      : "Network Error";
+    throw new Error(message);
   }
 };
 
