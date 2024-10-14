@@ -36,9 +36,6 @@ def signup():
     if user_model.find_by_email(email):
         return jsonify({"message": "User already exists"}), 409
 
-    # Hash the password
-    hashed_password = generate_password_hash(password).decode("utf-8")
-
     # Generate a verification code
     verification_code = "".join(random.choices(string.digits, k=6))
     verification_code_expiry = datetime.datetime.utcnow() + datetime.timedelta(
@@ -95,20 +92,36 @@ def signup():
         )
 
     # Store user data in MongoDB
-    user_data = {
-        "username": username,
-        "email": email,
-        "password": hashed_password,
-        "first_name": first_name,
-        "last_name": last_name,
-        "supabase_id": supabase_user_id,
-        "verified": False,
-        "verification_code": verification_code,
-        "verification_code_expiry": verification_code_expiry,
-    }
-    user_model.collection.insert_one(user_data)
+    try:
+        user_id, error = user_model.create_user(
+            email=email,
+            username=username,
+            supabase_user_id=supabase_user_id,
+            verified=False,
+            verification_code=verification_code,
+            verification_code_expiry=verification_code_expiry,
+        )
 
-    return jsonify({"message": "User created, verification code sent to email"}), 201
+        if error:
+            return (
+                jsonify(
+                    {"message": "Error creating user in MongoDB", "details": error}
+                ),
+                500,
+            )
+
+    except Exception as e:
+        return jsonify({"message": "Unexpected error", "details": str(e)}), 500
+
+    return (
+        jsonify(
+            {
+                "message": "User created, verification code sent to email",
+                "user_id": str(user_id),
+            }
+        ),
+        201,
+    )
 
 
 def send_verification_email(email, code):
@@ -358,7 +371,7 @@ def send_reset_email(email, token):
             Source=SENDER,
         )
     except ClientError as e:
-        logging.error("Error sending email: %s", e.response['Error']['Message'])
+        logging.error("Error sending email: %s", e.response["Error"]["Message"])
 
 
 @auth_bp.route("/reset-password/<token>", methods=["POST"])
