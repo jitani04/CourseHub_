@@ -10,9 +10,7 @@ function Dashboard() {
         {/* You can add the rest of the contents here */}
       </div>
     </div>
-    
   );
 }
 
 export default Dashboard;
-

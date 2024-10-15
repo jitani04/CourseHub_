@@ -9,11 +9,11 @@ const Separator = React.forwardRef(
       className={cn(
         orientation === "horizontal" ? "h-[1px] w-full" : "w-[1px] h-full",
         "bg-border",
-        className
+        className,
       )}
       {...props}
     />
-  )
+  ),
 );
 Separator.displayName = SeparatorPrimitive.Root.displayName;
 
