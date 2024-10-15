@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import {
   Home,
   Users,
@@ -12,9 +12,9 @@ import {
   Settings,
   HelpCircle,
   LogOut,
-} from 'lucide-react';
-import Button from '../ui/Button';
-import Input from '../ui/Input';
+} from "lucide-react";
+import Button from "../ui/Button";
+import Input from "../ui/Input";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -22,32 +22,34 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuItem,
-} from '../ui/DropdownMenu';
-import { Avatar, AvatarImage, AvatarFallback } from '../ui/Avatar';
+} from "../ui/DropdownMenu";
+import { Avatar, AvatarImage, AvatarFallback } from "../ui/Avatar";
 import {
   Sheet,
   SheetTrigger,
   SheetContent,
   SheetHeader,
   SheetTitle,
-} from '../ui/Sheet';
-import { Separator } from '../ui/Separator';
+} from "../ui/Sheet";
+import { Separator } from "../ui/Separator";
 
 function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const defaultItemHoverClasses =
+    "hover:bg-green-100 hover:text-green-800 focus:bg-green-100 focus:text-green-800";
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 0);
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
     <header
       className={`sticky top-0 z-10 bg-white transition-shadow duration-300 ${
-        isScrolled ? 'shadow-md' : ''
+        isScrolled ? "shadow-md" : ""
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
@@ -115,14 +117,21 @@ function Header() {
                 <ChevronDown className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
+
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Profile</DropdownMenuItem>
-              <DropdownMenuItem>Settings</DropdownMenuItem>
-              <DropdownMenuItem>Help</DropdownMenuItem>
+              <DropdownMenuItem className={defaultItemHoverClasses}>
+                Profile
+              </DropdownMenuItem>
+              <DropdownMenuItem className={defaultItemHoverClasses}>
+                Settings
+              </DropdownMenuItem>
+              <DropdownMenuItem className={defaultItemHoverClasses}>
+                Help
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-red-600">
+              <DropdownMenuItem className="text-red-600 hover:bg-red-100 hover:text-red-800 focus:bg-red-100 focus:text-red-800">
                 Sign out
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -209,7 +218,7 @@ function Header() {
                   variant="ghost"
                   className="justify-start text-gray-600 hover:bg-gray-100 transition-colors duration-200"
                 >
-                  <Settings className="mr-2 h-5 w-5" />
+                  <Settings className="mr-2 h-5 w-5 " />
                   Settings
                 </Button>
                 <Button
