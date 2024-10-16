@@ -240,6 +240,7 @@ function Header() {
                 <Button
                   variant="ghost"
                   className="justify-start text-red-600 hover:bg-red-100 transition-colors duration-200"
+                  onClick={handleSignOut}
                 >
                   <LogOut className="mr-2 h-5 w-5" />
                   Sign Out
