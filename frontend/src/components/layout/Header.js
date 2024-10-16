@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Home,
   Users,
@@ -35,6 +35,7 @@ import { Separator } from "../ui/Separator";
 
 function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
+  const navigate = useNavigate();
   const defaultItemHoverClasses =
     "hover:bg-green-100 hover:text-green-800 focus:bg-green-100 focus:text-green-800";
 
@@ -45,6 +46,12 @@ function Header() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleSignOut = () => {
+        localStorage.removeItem("jwt_token");  
+        localStorage.removeItem("user");
+        navigate("/signin");
+  };
 
   return (
     <header
@@ -131,7 +138,9 @@ function Header() {
                 Help
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-red-600 hover:bg-red-100 hover:text-red-800 focus:bg-red-100 focus:text-red-800">
+              <DropdownMenuItem className="text-red-600 hover:bg-red-100 hover:text-red-800 focus:bg-red-100 focus:text-red-800"
+                onClick={handleSignOut}
+              >
                 Sign out
               </DropdownMenuItem>
             </DropdownMenuContent>
