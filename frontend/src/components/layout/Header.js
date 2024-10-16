@@ -52,7 +52,7 @@ function Header() {
         isScrolled ? "shadow-md" : ""
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+      <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between flex-wrap">
         {/* Left Side: we can add more here but enough for now */}
         <div className="flex items-center space-x-4">
           <Link to="/dashboard" className="flex items-center space-x-2">
