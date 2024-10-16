@@ -1,13 +1,14 @@
 import React from "react";
+import Header from "../components/layout/Header";
 
 function Dashboard() {
-  const user = JSON.parse(localStorage.getItem("user"));
   return (
-    <div>
-      <h2>Welcome, {user.username}!</h2>
-      <p>Email: {user.email}</p>
-      <p>First Name: {user.first_name}</p>
-      <p>Last Name: {user.last_name}</p>
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-white">
+      <Header />
+      <div className="dashboard-content p-4">
+        <h2 className="text-2xl font-bold">Welcome to CourseHub</h2>
+        {/* You can add the rest of the contents here */}
+      </div>
     </div>
   );
 }
