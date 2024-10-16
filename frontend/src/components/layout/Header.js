@@ -57,7 +57,7 @@ function Header() {
         <div className="flex items-center space-x-4">
           <Link to="/dashboard" className="flex items-center space-x-2">
             <BookOpen className="h-8 w-8 text-green-600" />
-            <h1 className="text-2xl font-bold text-green-800">CourseHub</h1>
+            <h1 className="text-2xl font-bold text-green-600">CourseHub</h1>
           </Link>
           <nav className="hidden md:flex space-x-1">
             <Button
@@ -119,7 +119,7 @@ function Header() {
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuLabel className="text-green-800">My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem className={defaultItemHoverClasses}>
                 Profile
