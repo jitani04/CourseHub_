@@ -54,7 +54,7 @@ function SignIn() {
       );
 
       // Redirect to dashboard
-      navigate("/dashboard");
+      navigate("/feed");
     } catch (err) {
       console.error("Error during sign-in:", err);
       setError(err.message || "Signin failed");
