@@ -4,6 +4,8 @@
 
 This project is built using **Python Flask** for the backend and **React** for the frontend. **MongoDB Atlas** is used to store user data and posts, while **Supabase** handles authentication and file storage.
 
+View the project demo without having to run the application: : https://www.youtube.com/watch?v=SAqRzDYyfaU
+
 ## 🚀 Table of Contents
 
 - [Features](#-features)
